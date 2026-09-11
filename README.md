@@ -1,9 +1,14 @@
-#Integrantes:
+##Integrantes:
 **Adler Murga Ferreira** **RA:22511624**
+
 **Alexandre Henrique Paiva Rocha** **RA:22451424**
+
 **Arthur Gabriel da Silva Barbosa** **RA:22500598**
+
 **Gabriel Francisco Pires de Assis** **RA:22408417**
+
 **Jean de Almeida Brito** **RA:22612228**
+
 **José Rafael de Lucena Martini** **RA:22610479**
 
 
