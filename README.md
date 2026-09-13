@@ -1,107 +1,153 @@
-## Integrantes:
-
-**Adler Murga Ferreira** **RA:22511624**
-
-**Alexandre Henrique Paiva Rocha** **RA:22451424**
-
-**Arthur Gabriel da Silva Barbosa** **RA:22500598**
-
-**Gabriel Francisco Pires de Assis** **RA:22408417**
-
-**Jean de Almeida Brito** **RA:22612228**
-
-**José Rafael de Lucena Martini** **RA:22610479**
-
-
 # Validador de Placas Brasileiras
 
-## 1. Visão Geral do Projeto
+## Integrantes
 
-O **Validador de Placas Brasileiras** é um sistema desenvolvido para verificar se uma placa de veículo é válida de acordo com os padrões de identificação veicular utilizados no Brasil.
-
-O projeto contempla os dois principais formatos:
-
-* **Padrão antigo:** `ABC-1234`
-* **Padrão Mercosul:** `ABC1D23`
-
-O objetivo é receber uma placa como entrada, realizar sua validação e informar se ela é válida, identificando o padrão correspondente quando aplicável.
-
-O projeto será desenvolvido utilizando **Spec-Driven Development (SDD)**, mantendo as especificações como referência para a implementação e os testes.
+- **Adler Murga Ferreira** — RA: 22511624
+- **Alexandre Henrique Paiva Rocha** — RA: 22451424
+- **Arthur Gabriel da Silva Barbosa** — RA: 22500598
+- **Gabriel Francisco Pires de Assis** — RA: 22408417
+- **Jean de Almeida Brito** — RA: 22612228
+- **José Rafael de Lucena Martini** — RA: 22610479
 
 ---
 
-## 2. Guia de Instalação e Execução
+## Visão Geral
 
-### Pré-requisitos
+O **Validador de Placas Brasileiras** é um projeto para verificar se uma placa de veículo está de acordo com os padrões de identificação veicular utilizados no Brasil.
 
-* Python 3.12 ou superior
-* Git
-* Docker
+O sistema terá como objetivo validar os dois principais formatos:
 
-### Clonar o repositório
+- **Padrão antigo:** `ABC-1234`
+- **Padrão Mercosul:** `ABC1D23`
 
-### Criar ambiente virtual
+A aplicação deverá receber uma placa como entrada, realizar sua normalização e verificar se ela corresponde a um dos padrões definidos.
 
-### Ativar o ambiente virtual
+Quando a placa for válida, o sistema deverá informar o padrão identificado. Caso contrário, deverá informar que a placa é inválida.
 
-### Instalar as dependências
+---
 
-```bash
-pip install -r requirements.txt
+## Objetivo
+
+Desenvolver uma solução capaz de validar placas brasileiras de forma automática, seguindo regras previamente definidas e documentadas.
+
+O projeto utiliza **Spec-Driven Development (SDD)**, de forma que as especificações sirvam como referência para a implementação e posteriormente para os testes.
+
+---
+
+## Escopo Atual
+
+### Dentro do escopo
+
+- Recebimento de uma placa.
+- Normalização da entrada.
+- Validação do padrão antigo.
+- Validação do padrão Mercosul.
+- Identificação do padrão da placa.
+- Retorno estruturado do resultado.
+- Testes automatizados.
+- Execução padronizada utilizando Docker.
+
+### Fora do escopo
+
+- Consulta de proprietário.
+- Consulta de RENAVAM.
+- Integração com DETRAN.
+- Consulta de bancos de dados de veículos.
+- Reconhecimento de placas por imagem ou câmera.
+
+---
+
+## Tecnologias
+
+- **Python** 
+- **FastAPI** — API da aplicação.
+- **pytest** — testes automatizados.
+- **Docker** — padronização do ambiente.
+- **Git/GitHub** — controle de versão e colaboração.
+
+---
+
+## Organização do Desenvolvimento
+
+O projeto segue uma estrutura baseada em **Spec-Driven Development (SDD)**:
+
+```text
+Problema
+   ↓
+Especificação
+   ↓
+Arquitetura
+   ↓
+Implementação
+   ↓
+Testes
+   ↓
+Validação e refinamento
 ```
 
-### Executar o projeto
+---
 
-A forma definitiva de execução será definida durante a implementação da aplicação.
+## Controle de Versão
+
+O desenvolvimento utiliza o seguinte fluxo de branches:
+
+```text
+main
+ ↑
+develop
+ ↑
+feature/*
+```
+
+### Branches
+
+- `main` — versão principal e estável do projeto.
+- `develop` — branch de integração do desenvolvimento.
+- `feature/*` — desenvolvimento de funcionalidades específicas.
 
 ---
 
-## 3. ADRs — Registro de Decisões Arquiteturais
+## Estrutura de Documentação
 
-### ADR-001 — Python
+As especificações do projeto estão sendo organizadas para servir como referência durante o desenvolvimento.
 
-**Decisão:** Utilizar Python como linguagem principal.
+Documentos previstos:
 
-**Motivo:** Possui sintaxe simples, ampla utilização no desenvolvimento de aplicações e facilita a implementação e os testes do modelo de validação.
-
-### ADR-002 — FastAPI
-
-**Decisão:** Utilizar FastAPI para disponibilizar a validação através de uma API.
-
-**Motivo:** Framework leve e adequado para criação de APIs em Python, permitindo organizar a comunicação entre entrada e resultado da validação.
-
-### ADR-003 — pytest
-
-**Decisão:** Utilizar pytest para os testes automatizados.
-
-**Motivo:** Permite criar testes de forma simples e verificar se a implementação segue as regras definidas nas especificações.
-
-### ADR-004 — Docker
-
-**Decisão:** Utilizar Docker para padronização do ambiente.
-
-**Motivo:** Permite que os integrantes da equipe executem o projeto em ambientes semelhantes, reduzindo problemas relacionados às diferenças de configuração.
-
-### ADR-005 — Spec-Driven Development
-
-**Decisão:** Utilizar SDD como abordagem de desenvolvimento.
-
-**Motivo:** As especificações serão definidas antes da implementação, servindo como referência para o desenvolvimento, utilização do agente de IA e criação dos testes.
+- Problema e objetivo.
+- Requisitos funcionais e não funcionais.
+- Regras de validação.
+- Arquitetura.
+- Contratos da API.
+- Instruções para o agente de IA.
 
 ---
 
-## 4. Tecnologias
+## Status do Projeto
 
-* Python
-* FastAPI
-* pytest
-* Docker
-* Git
-* GitHub
+**Em desenvolvimento — etapa de especificação e organização do ambiente.**
+
+Atualmente, a equipe está estruturando:
+
+- Repositório GitHub.
+- Branches de desenvolvimento.
+- Issues e organização das tarefas.
+- Especificações do sistema.
+- Arquitetura inicial.
+- Documentação do projeto.
+
+**A implementação do código e os testes automatizados serão realizados nas próximas etapas.**
 
 ---
 
-## 5. Status do Projeto
- **Em desenvolvimento**
+## Próximas Etapas
 
-As próximas etapas incluem a criação das especificações, implementação do modelo de validação, integração com a API e desenvolvimento do conjunto de testes automatizados.
+1. Finalizar as especificações.
+2. Organizar as tarefas no GitHub Projects.
+3. Configurar as regras de proteção das branches.
+4. Criar a estrutura do projeto.
+5. Configurar o ambiente Docker.
+6. Configurar o agente de geração de código.
+7. Implementar o validador.
+8. Criar o Test Harness.
+9. Executar os testes em Docker.
+10. Realizar Pull Requests e revisões.
