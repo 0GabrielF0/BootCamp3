@@ -1,3 +1,5 @@
+# BootCamp3
+
 # Validador de Placas Brasileiras
 
 API para validação de placas veiculares brasileiras nos padrões **antigo** e **Mercosul**, desenvolvida em Python com abordagem *Spec-Driven Development* (SDD).
@@ -79,27 +81,9 @@ A aplicação separa as regras de negócio da camada HTTP. O núcleo de validaç
 | `tests/test_validator.py` | Testa o núcleo de normalização e validação. |
 | `tests/test_api.py` | Testa os endpoints e os contratos HTTP. |
 
-### Diagrama de arquitetura
-
-flowchart TD
-    A["Cliente HTTP"] --> B["API FastAPI<br/>app/main.py"]
-    B --> C["Schemas<br/>Pydantic"]
-    C --> D["Núcleo de validação"]
-    D --> E["Normalizador"]
-    E --> F["Validador"]
-    F --> G["Resultado estruturado"]
-    G --> H["Resposta JSON"]
-    H --> A
-
-    T["Testes pytest"] --> D
-    T --> B
-
-    style D fill:#17365D,color:#FFFFFF,stroke:#10243A
-    style F fill:#1F4E79,color:#FFFFFF,stroke:#10243A
-    style G fill:#D9EAF7,color:#17365D,stroke:#1F4E79
-
 ### Fluxo de validação
 
+```mermaid
 flowchart TD
     A["Receber entrada"] --> B{"É nula?"}
     B -- Sim --> X["Rejeitar entrada"]
@@ -123,6 +107,24 @@ flowchart TD
     style I fill:#D9EAD3,color:#274E13,stroke:#6AA84F
     style K fill:#D9EAD3,color:#274E13,stroke:#6AA84F
     style X fill:#F4CCCC,color:#990000,stroke:#CC0000
+```
+
+
+### Diagrama de arquitetura
+
+```mermaid
+flowchart TD
+    A["Cliente HTTP"] --> B["API FastAPI"]
+    B --> C["Schemas Pydantic"]
+    C --> D["Núcleo de validação"]
+    D --> E["Normalizador"]
+    E --> F["Validador"]
+    F --> G["Resultado estruturado"]
+    G --> H["Resposta JSON"]
+    H --> A
+    T["Testes pytest"] --> D
+    T --> B
+```
     
 ## 5. Contrato da API
 
