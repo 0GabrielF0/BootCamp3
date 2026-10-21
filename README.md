@@ -83,42 +83,49 @@ A aplicação separa as regras de negócio da camada HTTP. O núcleo de validaç
 
 ### Diagrama de arquitetura
 
-```mermaid
 flowchart TD
-    A[Cliente HTTP] --> B[FastAPI - app/main.py]
-    B --> C[Esquemas Pydantic]
-    C --> D[Núcleo de validação]
-    D --> E[Normalizador]
-    E --> F[Validador de placas]
-    F --> G[Resultado estruturado]
-    G --> H[Resposta JSON]
+    A["Cliente HTTP"] --> B["API FastAPI<br/>app/main.py"]
+    B --> C["Schemas<br/>Pydantic"]
+    C --> D["Núcleo de validação"]
+    D --> E["Normalizador"]
+    E --> F["Validador"]
+    F --> G["Resultado estruturado"]
+    G --> H["Resposta JSON"]
     H --> A
-    I[pytest] --> D
-    I --> B
-```
+
+    T["Testes pytest"] --> D
+    T --> B
+
+    style D fill:#17365D,color:#FFFFFF,stroke:#10243A
+    style F fill:#1F4E79,color:#FFFFFF,stroke:#10243A
+    style G fill:#D9EAF7,color:#17365D,stroke:#1F4E79
 
 ### Fluxo de validação
 
-```mermaid
 flowchart TD
-    A[Receber entrada] --> B{Entrada nula?}
-    B -- Sim --> X[Rejeitar com motivo]
-    B -- Não --> C{É texto?}
+    A["Receber entrada"] --> B{"É nula?"}
+    B -- Sim --> X["Rejeitar entrada"]
+    B -- Não --> C{"É texto?"}
     C -- Não --> X
-    C -- Sim --> D{Está vazia?}
+    C -- Sim --> D{"Está vazia?"}
     D -- Sim --> X
-    D -- Não --> E[Normalizar entrada]
-    E --> F{Possui 7 caracteres?}
+    D -- Não --> E["Normalizar"]
+    E --> F{"Tem 7 caracteres?"}
     F -- Não --> X
-    F -- Sim --> G{Contém apenas A-Z e 0-9?}
+    F -- Sim --> G{"Só A-Z e 0-9?"}
     G -- Não --> X
-    G -- Sim --> H{Corresponde ao padrão antigo?}
-    H -- Sim --> I[Resultado válido: antigo]
-    H -- Não --> J{Corresponde ao padrão Mercosul?}
-    J -- Sim --> K[Resultado válido: mercosul]
+    G -- Sim --> H{"Padrão antigo?"}
+    H -- Sim --> I["Válida: antigo"]
+    H -- Não --> J{"Padrão Mercosul?"}
+    J -- Sim --> K["Válida: Mercosul"]
     J -- Não --> X
-```
 
+    style A fill:#17365D,color:#FFFFFF,stroke:#10243A
+    style E fill:#D9EAF7,color:#17365D,stroke:#1F4E79
+    style I fill:#D9EAD3,color:#274E13,stroke:#6AA84F
+    style K fill:#D9EAD3,color:#274E13,stroke:#6AA84F
+    style X fill:#F4CCCC,color:#990000,stroke:#CC0000
+    
 ## 5. Contrato da API
 
 ### `GET /`
