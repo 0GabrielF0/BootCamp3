@@ -1,5 +1,3 @@
-# BootCamp3
-
 # Validador de Placas Brasileiras
 
 API para validação de placas veiculares brasileiras nos padrões **antigo** e **Mercosul**, desenvolvida em Python com abordagem *Spec-Driven Development* (SDD).
