@@ -38,6 +38,64 @@ resultado de testes. Atende ao item **"Refinamento por Feedback"** da Entrega 1.
 
 ---
 
+## v1.1 — 2026-10-21
+
+**Origem:** revisão do PR #9 (implementação do validador) e conferência da spec contra o código mergeado.
+**Autor:** Adler Murga Ferreira (RA 22511624)
+
+**Contexto — loop de feedback no PR #9**
+
+A primeira versão do PR #9 passava em todos os testes (20 na época), mas divergia da spec:
+
+- endpoint `/validate` em vez de `POST /validar` (RF-07);
+- ausência de `GET /health` (RF-10);
+- hífen obrigatório no padrão antigo, contrariando RN-01 e RN-03.1;
+- normalização sem a remoção do hífen separador (RN-03, RN-03.4);
+- ausência do campo `motivo` com os códigos de RN-06 a RN-08.
+
+Os testes passavam porque verificavam o comportamento do código, não o da especificação.
+A revisão pediu mudanças; código e testes foram ajustados à spec (47 testes passando, CI
+verde) e as regras de negócio foram mantidas. Lição registrada: um teste só é evidência de
+conformidade quando verifica a regra (RN/CT) da spec, e não o que o código já faz.
+
+Depois do merge, a spec foi conferida contra a implementação. As diferenças encontradas
+estão abaixo; em todas, a decisão do código foi considerada pertinente e a spec foi
+ajustada a ela.
+
+**O que mudou**
+
+- `spec.md` §5.1: os contratos do núcleo passam a indicar o módulo de cada elemento
+  (`resultado.py`, `normalizador.py`, `validador.py`), como implementado.
+- `spec.md` §5.5: nova linha para `404` em rota inexistente, com `codigo: "REQUISICAO_INVALIDA"`.
+- `spec.md` §5.7 (novo): contrato de `GET /`, rota informativa que aponta para `/docs`.
+- `spec.md` §6.3: novos casos CT-42 (`GET /`) e CT-43 (`POST /validate` responde `404`),
+  ambos já cobertos por `tests/test_api.py`.
+- `spec.md` §7: caminho dos testes corrigido para `tests/test_validator.py` e
+  rastreabilidade do teste de arquitetura e dos testes do normalizador.
+- `components.md`: C4, C5 e C6 apontam para `app/schemas.py` e `app/main.py`; a subpasta
+  `app/api/` prevista na v1.0 não foi criada.
+- `components.md` C6: tabela de handlers, incluindo o motivo de registrar a
+  `HTTPException` do Starlette (erros `404`/`405` de roteamento).
+- `components.md` §6: arquivo de teste de cada unidade e localização do teste de arquitetura.
+- `components.md`: documentado `app/validator.py` como módulo de compatibilidade.
+
+**Motivo**
+
+- Manter a rastreabilidade (RNF-05) fiel ao repositório: referência a arquivo inexistente
+  quebra o vínculo entre regra, teste e código.
+- Registrar comportamentos da API que já existiam e eram testados, mas não estavam na spec
+  (`GET /`, `404` com erro padronizado).
+- A separação domínio × borda (RNF-01) foi preservada; só a organização física da borda
+  ficou mais simples.
+
+**Impacto**
+
+- IDs afetados: §5.5, §5.7 (novo), CT-42 e CT-43 (novos). Nenhum RF, RNF ou RN mudou.
+- Testes a criar/ajustar: ver P-05 e P-06.
+- Código a ajustar: nenhum.
+
+---
+
 ## v1.0 — 2026-09-12
 
 **Origem:** especificação inicial da Entrega 1 (Spec-Driven Development).
@@ -82,3 +140,6 @@ resultado de testes. Atende ao item **"Refinamento por Feedback"** da Entrega 1.
 | P-02 | Regra para placas de motocicleta / formatos especiais. | Feedback do professor ou do grupo. |
 | P-03 | Aceitar separador diferente de hífen (espaço, ponto). | Se os testes apontarem entrada real nesse formato. |
 | P-04 | Internacionalização das mensagens. | Fora do escopo enquanto RNF-07 valer. |
+| P-05 | Cobrir na API os casos CT-35 (`"XXX"`), CT-36 (`{"plaka": ...}`) e CT-39 (corpo não-JSON), ainda sem teste. | Antes da entrega final. |
+| P-06 | Marcar cada teste com o ID do CT/RN que verifica (RNF-05), para rastreabilidade direta no relatório de testes. | Antes da entrega final. |
+| P-07 | Remover `app/validator.py` quando nada mais depender do caminho antigo. | Próxima limpeza de código. |

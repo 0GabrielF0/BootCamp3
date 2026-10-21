@@ -1,7 +1,7 @@
 # Decomposição em Unidades — Validador de Placas Brasileiras
 
-**Versão:** 1.0
-**Data:** 2026-09-12
+**Versão:** 1.1
+**Data:** 2026-10-21
 **Documento base:** [`spec.md`](./spec.md)
 
 Objetivo: dividir o sistema em unidades independentes e testáveis, de modo que cada uma
@@ -12,18 +12,26 @@ respeitando **RNF-01** (o núcleo não depende de framework web).
 
 ## 1. Visão Geral das Camadas
 
-| Camada | Componente | Módulo previsto | Depende de |
+| Camada | Componente | Módulo | Depende de |
 |---|---|---|---|
 | Domínio | C1 — Normalizador | `app/core/normalizador.py` | biblioteca padrão |
 | Domínio | C2 — Validador núcleo | `app/core/validador.py` | C1, biblioteca padrão |
 | Domínio | C3 — Modelo de resultado | `app/core/resultado.py` | biblioteca padrão |
-| Borda | C4 — Schemas Pydantic | `app/api/schemas.py` | Pydantic, C3 (apenas valores) |
-| Borda | C5 — Camada API | `app/api/rotas.py`, `app/main.py` | FastAPI, C2, C4 |
-| Borda | C6 — Tratador de erros | `app/api/erros.py` | FastAPI |
+| Borda | C4 — Schemas Pydantic | `app/schemas.py` | Pydantic, C3 (apenas valores) |
+| Borda | C5 — Camada API | `app/main.py` | FastAPI, C2, C4 |
+| Borda | C6 — Tratador de erros | `app/main.py` (handlers registrados na aplicação) | FastAPI, Starlette |
+
+Na v1.0 a borda estava prevista em uma subpasta `app/api/`. A implementação concentrou
+rotas e handlers em `app/main.py` e os schemas em `app/schemas.py`: com três rotas e
+três handlers, a subpasta não trazia ganho de organização. A separação domínio × borda
+(RNF-01), que é o que a decomposição exige, foi mantida.
+
+`app/validator.py` é um módulo de compatibilidade que apenas reexporta `normalizar` e
+`validar_placa` de `app/core/`. Não contém regra e não é usado pela API.
 
 **Regra de dependência (obrigatória):** as setas apontam sempre da borda para o domínio.
-Nenhum módulo em `app/core/` pode importar `fastapi`, `pydantic`, `starlette` ou
-`app.api.*`. Essa regra é verificável por um teste automatizado (ver §6).
+Nenhum módulo em `app/core/` pode importar `fastapi`, `pydantic`, `starlette` ou módulos
+da borda. Essa regra é verificada por um teste automatizado (ver §6).
 
 ---
 
@@ -117,7 +125,8 @@ class ErroResponse(BaseModel):
 **Fronteira de responsabilidade:** falha no schema produz `422` (RF-08, CT-36 a CT-39).
 Falha de regra de negócio produz `200` com `valida: false` (CT-35).
 
-**Testável isoladamente por:** testes de (de)serialização, sem subir servidor.
+**Testado por:** testes de contrato da API em `tests/test_api.py` (os schemas são exercitados
+pelo `TestClient`; não há suíte de serialização separada).
 
 ---
 
@@ -132,6 +141,7 @@ sem lógica de decisão.
 |---|---|---|---|
 | `POST` | `/validar` | `ValidarPlacaRequest` | `200` `ValidarPlacaResponse` |
 | `GET` | `/health` | — | `200` `{"status": "ok"}` |
+| `GET` | `/` | — | `200` identificação do serviço (spec §5.7) |
 
 Fluxo do `POST /validar`:
 
@@ -140,7 +150,7 @@ Fluxo do `POST /validar`:
 3. Converte o `ResultadoValidacao` em `ValidarPlacaResponse` (mapeamento 1:1 de campos).
 4. Responde `200` sempre que o passo 2 executou.
 
-**Testável isoladamente por:** CT-34 a CT-41, via `TestClient` do FastAPI.
+**Testável isoladamente por:** CT-34 a CT-43, via `TestClient` do FastAPI.
 
 ---
 
@@ -150,8 +160,18 @@ Fluxo do `POST /validar`:
 de §5.4 da `spec.md` (`REQUISICAO_INVALIDA`, `METODO_NAO_PERMITIDO`, `ERRO_INTERNO`),
 garantindo **RNF-09** — nenhum stack trace vaza para o cliente.
 
-**Interface:** handlers registrados em `app/main.py` para `RequestValidationError`,
-`HTTPException` e `Exception`.
+**Interface:** handlers registrados em `app/main.py`:
+
+| Exceção | Status | `codigo` |
+|---|---|---|
+| `RequestValidationError` | `422` | `REQUISICAO_INVALIDA` |
+| `StarletteHTTPException` com status `405` | `405` | `METODO_NAO_PERMITIDO` |
+| `StarletteHTTPException` com outro status (ex.: `404`) | o próprio status | `REQUISICAO_INVALIDA` |
+| `Exception` | `500` | `ERRO_INTERNO` |
+
+O handler é registrado para a `HTTPException` do Starlette, e não só para a do FastAPI,
+porque os erros de roteamento (`404`, `405`) são lançados pelo Starlette. Registrar apenas
+a classe do FastAPI deixaria esses casos fora do formato de §5.4.
 
 ---
 
@@ -178,9 +198,9 @@ flowchart TD
     Cliente["Cliente HTTP"]
 
     subgraph Borda["Camada de Borda (depende de framework)"]
-        C5["C5 - Camada API<br/>rotas.py / main.py<br/>FastAPI"]
-        C4["C4 - Schemas Pydantic<br/>schemas.py"]
-        C6["C6 - Tratador de erros<br/>erros.py"]
+        C5["C5 - Camada API<br/>app/main.py<br/>FastAPI"]
+        C4["C4 - Schemas Pydantic<br/>app/schemas.py"]
+        C6["C6 - Tratador de erros<br/>handlers em app/main.py"]
     end
 
     subgraph Nucleo["Núcleo de Domínio (RNF-01: sem framework)"]
@@ -207,7 +227,7 @@ Dependência entre camadas (nunca o inverso):
 
 ```mermaid
 flowchart LR
-    A["app/api/*<br/>FastAPI + Pydantic"] --> B["app/core/*<br/>apenas biblioteca padrão"]
+    A["app/main.py + app/schemas.py<br/>FastAPI + Pydantic"] --> B["app/core/*<br/>apenas biblioteca padrão"]
     B -. proibido .-> A
 ```
 
@@ -231,12 +251,12 @@ empacotamento Docker.
 
 ## 6. Testabilidade
 
-| Unidade | Tipo de teste | Dependências externas |
-|---|---|---|
-| C1, C2, C3 | Unitário puro (`pytest.mark.parametrize`) | nenhuma |
-| C4 | Unitário de serialização | Pydantic |
-| C5, C6 | Integração via `TestClient` | FastAPI |
+| Unidade | Arquivo de teste | Tipo de teste | Dependências externas |
+|---|---|---|---|
+| C1, C2, C3 | `tests/test_validator.py` | Unitário puro (`pytest.mark.parametrize`) | nenhuma |
+| C4, C5, C6 | `tests/test_api.py` | Integração via `TestClient` | FastAPI |
 
-**Teste de arquitetura (guarda de RNF-01):** um teste lê os módulos de `app/core/` e falha
-se encontrar import de `fastapi`, `pydantic`, `starlette` ou `app.api`. Isso impede que a
+**Teste de arquitetura (guarda de RNF-01):** `test_nucleo_nao_depende_de_framework_web`, em
+`tests/test_validator.py`, lê os módulos de `app/core/` e falha se encontrar referência a
+`fastapi`, `pydantic`, `starlette` ou `app.api`. Isso impede que a
 regra de dependência seja quebrada em um PR futuro sem que alguém perceba.

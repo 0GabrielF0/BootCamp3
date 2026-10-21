@@ -1,8 +1,8 @@
 # Especificação Técnica — Validador de Placas Brasileiras
 
-**Versão:** 1.0
-**Data:** 2026-09-12
-**Status:** Aprovada para a Entrega 1
+**Versão:** 1.1
+**Data:** 2026-10-21
+**Status:** Aprovada; alinhada à implementação na Entrega 2 (ver [`spec-changelog.md`](./spec-changelog.md))
 
 ---
 
@@ -130,9 +130,14 @@ Legenda: `A` = letra A–Z, `9` = dígito 0–9.
 
 ### 5.1 Função núcleo (sem framework — RNF-01)
 
-Módulo: `app/core/validador.py`
+Módulos:
+
+- `app/core/resultado.py` — `Padrao`, `Motivo` e `ResultadoValidacao`.
+- `app/core/normalizador.py` — `normalizar`.
+- `app/core/validador.py` — `validar_placa`.
 
 ```python
+# app/core/resultado.py
 from dataclasses import dataclass
 from enum import Enum
 
@@ -160,10 +165,12 @@ class ResultadoValidacao:
     mensagem: str                   # descrição em português, sempre preenchida
 
 
+# app/core/normalizador.py
 def normalizar(entrada: str) -> str:
     """Aplica RN-03. Não valida."""
 
 
+# app/core/validador.py
 def validar_placa(entrada: object) -> ResultadoValidacao:
     """Aplica RN-01 a RN-12. Nunca lança exceção (RNF-09)."""
 ```
@@ -275,6 +282,7 @@ Formato do objeto de erro:
 | `200` | Requisição válida; placa válida **ou** inválida. | §5.2 / §5.3 |
 | `422` | Corpo malformado, campo ausente ou tipo errado (RF-08). | §5.4, `codigo: "REQUISICAO_INVALIDA"` |
 | `405` | Método HTTP não permitido em `/validar` (ex.: `GET`). | §5.4, `codigo: "METODO_NAO_PERMITIDO"` |
+| `404` | Rota inexistente (ex.: `POST /validate`, nome usado na primeira versão do PR #9). | §5.4, `codigo: "REQUISICAO_INVALIDA"` |
 | `500` | Falha interna inesperada. Não deve ocorrer para entrada de usuário (RNF-09). | §5.4, `codigo: "ERRO_INTERNO"` |
 
 ### 5.6 `GET /health`
@@ -283,6 +291,21 @@ Formato do objeto de erro:
 
 ```json
 { "status": "ok" }
+```
+
+### 5.7 `GET /` — identificação do serviço
+
+Rota informativa, sem regra de negócio. Indica que a API está no ar e onde está a
+documentação OpenAPI (RNF-08).
+
+**Resposta — `200 OK`**
+
+```json
+{
+  "projeto": "Validador de Placas Brasileiras",
+  "status": "operacional",
+  "documentacao": "/docs"
+}
 ```
 
 ---
@@ -346,6 +369,8 @@ Cada caso referencia o ID da regra que verifica, para rastreabilidade na suíte 
 | CT-39 | `POST /validar` com corpo não-JSON | `422` | §5.4 |
 | CT-40 | `GET /validar` | `405` | §5.4 |
 | CT-41 | `GET /health` | `200` | `{"status": "ok"}` |
+| CT-42 | `GET /` | `200` | §5.7, `status: "operacional"` |
+| CT-43 | `POST /validate` com `{"placa": "ABC-1234"}` | `404` | Rota antiga não existe (RF-07) |
 
 ---
 
@@ -353,7 +378,9 @@ Cada caso referencia o ID da regra que verifica, para rastreabilidade na suíte 
 
 | Artefato | Referencia |
 |---|---|
-| Testes do núcleo (`tests/test_validador.py`) | CT-01 a CT-33; RN-01 a RN-12 |
-| Testes da API (`tests/test_api.py`) | CT-34 a CT-41; RF-07, RF-08, RF-10 |
+| Testes do núcleo (`tests/test_validator.py`) | CT-01 a CT-33; RN-01 a RN-12 |
+| Testes do normalizador (`tests/test_validator.py`) | RN-03, RN-11 |
+| Teste de arquitetura (`tests/test_validator.py::test_nucleo_nao_depende_de_framework_web`) | RNF-01, RF-09 |
+| Testes da API (`tests/test_api.py`) | CT-34 a CT-43; RF-07, RF-08, RF-10 |
 | Decomposição em componentes | `docs/components.md` |
 | Histórico de refinamentos desta spec | `docs/spec-changelog.md` |
