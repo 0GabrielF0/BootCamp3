@@ -89,3 +89,29 @@ def test_get_validar_metodo_nao_permitido():
 
     assert resposta.status_code == 405
     assert resposta.json()["erro"]["codigo"] == "METODO_NAO_PERMITIDO"
+
+
+def test_api_placa_curta_xxx():
+    # CT-35
+    resposta = client.post("/validar", json={"placa": "XXX"})
+
+    assert resposta.status_code == 200
+    assert resposta.json()["valida"] is False
+
+
+def test_api_campo_com_nome_errado():
+    # CT-36
+    resposta = client.post("/validar", json={"plaka": "ABC1234"})
+
+    assert resposta.status_code == 422
+
+
+def test_api_corpo_nao_json():
+    # CT-39
+    resposta = client.post(
+        "/validar",
+        content="ABC1234",
+        headers={"Content-Type": "text/plain"},
+    )
+
+    assert resposta.status_code == 422

@@ -38,6 +38,24 @@ resultado de testes. Atende ao item **"Refinamento por Feedback"** da Entrega 1.
 
 ---
 
+## v1.1.1 — 2026-10-25
+
+**Origem:** auditoria do repositório contra os critérios das Entregas 1 e 2.
+**Autor:** Adler Murga Ferreira (RA 22511624)
+
+**O que mudou**
+- Criados os testes de API dos casos CT-35, CT-36 e CT-39 (`tests/test_api.py`), resolvendo P-05.
+- Removido `app/validator.py`, que não era usado pela API nem pelos testes, resolvendo P-07.
+- Registrada a cobertura do núcleo: 100% em `app/core` (meta ≥ 90%).
+
+**Motivo**
+- Fechar as pendências marcadas como "antes da entrega final" e comprovar a meta de cobertura.
+
+**Impacto**
+- IDs afetados: CT-35, CT-36, CT-39.
+- Testes a criar/ajustar: 3 testes novos; suíte com 50 testes aprovados.
+- Código a ajustar: remoção de `app/validator.py`; nenhuma regra de negócio alterada.
+
 ## v1.1 — 2026-10-21
 
 **Origem:** revisão do PR #9 (implementação do validador) e conferência da spec contra o código mergeado.
@@ -140,6 +158,6 @@ ajustada a ela.
 | P-02 | Regra para placas de motocicleta / formatos especiais. | Feedback do professor ou do grupo. |
 | P-03 | Aceitar separador diferente de hífen (espaço, ponto). | Se os testes apontarem entrada real nesse formato. |
 | P-04 | Internacionalização das mensagens. | Fora do escopo enquanto RNF-07 valer. |
-| P-05 | Cobrir na API os casos CT-35 (`"XXX"`), CT-36 (`{"plaka": ...}`) e CT-39 (corpo não-JSON), ainda sem teste. | Antes da entrega final. |
+| P-05 | **Resolvida na v1.1.1.** Cobrir na API os casos CT-35 (`"XXX"`), CT-36 (`{"plaka": ...}`) e CT-39 (corpo não-JSON), ainda sem teste. | Antes da entrega final. |
 | P-06 | Marcar cada teste com o ID do CT/RN que verifica (RNF-05), para rastreabilidade direta no relatório de testes. | Antes da entrega final. |
-| P-07 | Remover `app/validator.py` quando nada mais depender do caminho antigo. | Próxima limpeza de código. |
+| P-07 | **Resolvida na v1.1.1.** Remover `app/validator.py` quando nada mais depender do caminho antigo. | Próxima limpeza de código. |
