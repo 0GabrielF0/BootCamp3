@@ -348,20 +348,25 @@ $ curl -X POST http://127.0.0.1:8000/validar -H "Content-Type: application/json"
 {"valida":true,"placa_normalizada":"ABC1D23","padrao":"mercosul","motivo":null,"mensagem":"Placa válida no padrão Mercosul."}
 ```
 
-Para rodar os testes no ambiente padronizado:
+Para rodar o harness no ambiente padronizado:
 
 ```powershell
-docker run --rm -v "${PWD}:/src" -w /src python:3.12-slim sh -c "pip install -r requirements.txt && python -m pytest -v"
+docker compose run --rm tests
 ```
 
+A última execução está versionada em [`logs_testes_final.txt`](logs_testes_final.txt). O roteiro completo de demonstração está em [`docs/DEMO.md`](docs/DEMO.md).
 
-\1
+
+## 9. Spec-Driven Development (SDD)
+
 Documentos do fluxo SDD:
 
 - [`docs/spec.md`](docs/spec.md) — especificação técnica.
 - [`docs/components.md`](docs/components.md) — decomposição em componentes.
 - [`docs/spec-changelog.md`](docs/spec-changelog.md) — refinamentos da especificação.
 - [`docs/refinamento-testes-erros-respecificacao.md`](docs/refinamento-testes-erros-respecificacao.md) — erros lógicos e loop de re-especificação.
+- [`docs/ERROS.md`](docs/ERROS.md) — registro dos erros lógicos do ciclo (E-01 a E-07).
+- [`docs/DEMO.md`](docs/DEMO.md) — roteiro de demonstração da API.
 - [`docs/relatorio-tecnico-etico.md`](docs/relatorio-tecnico-etico.md) — análise comparativa e ético-técnica do uso de IA.
 - [`CLAUDE.md`](CLAUDE.md) / [`AGENTS.md`](AGENTS.md) — regras e contexto para os agentes de IA.
 

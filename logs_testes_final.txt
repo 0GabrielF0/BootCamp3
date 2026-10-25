@@ -1,0 +1,82 @@
+$ docker compose run --rm tests
+ Network bc3_default Creating 
+ Network bc3_default Creating 
+ Network bc3_default Created 
+ Network bc3_default Created 
+ Container bc3-tests-run-d2601e203e64 Creating 
+ Container bc3-tests-run-d2601e203e64 Created 
+============================= test session starts ==============================
+platform linux -- Python 3.12.15, pytest-9.1.1, pluggy-1.7.0 -- /usr/local/bin/python
+rootdir: /app
+plugins: cov-7.1.0, anyio-4.15.1
+collecting ... collected 50 items
+
+tests/test_api.py::test_rota_inicial PASSED                              [  2%]
+tests/test_api.py::test_health PASSED                                    [  4%]
+tests/test_api.py::test_api_placa_antiga PASSED                          [  6%]
+tests/test_api.py::test_api_placa_antiga_sem_hifen PASSED                [  8%]
+tests/test_api.py::test_api_placa_mercosul PASSED                        [ 10%]
+tests/test_api.py::test_api_placa_invalida PASSED                        [ 12%]
+tests/test_api.py::test_api_formato_desconhecido PASSED                  [ 14%]
+tests/test_api.py::test_api_campo_ausente PASSED                         [ 16%]
+tests/test_api.py::test_api_tipo_incorreto PASSED                        [ 18%]
+tests/test_api.py::test_api_rota_antiga_nao_existe PASSED                [ 20%]
+tests/test_api.py::test_get_validar_metodo_nao_permitido PASSED          [ 22%]
+tests/test_api.py::test_api_placa_curta_xxx PASSED                       [ 24%]
+tests/test_api.py::test_api_campo_com_nome_errado PASSED                 [ 26%]
+tests/test_api.py::test_api_corpo_nao_json PASSED                        [ 28%]
+tests/test_validator.py::test_placas_validas[ABC-1234-ABC1234-antigo] PASSED [ 30%]
+tests/test_validator.py::test_placas_validas[ABC1234-ABC1234-antigo] PASSED [ 32%]
+tests/test_validator.py::test_placas_validas[ abc-1234 -ABC1234-antigo] PASSED [ 34%]
+tests/test_validator.py::test_placas_validas[abc1234-ABC1234-antigo] PASSED [ 36%]
+tests/test_validator.py::test_placas_validas[ABC1D23-ABC1D23-mercosul] PASSED [ 38%]
+tests/test_validator.py::test_placas_validas[abc1d23-ABC1D23-mercosul] PASSED [ 40%]
+tests/test_validator.py::test_placas_validas[ABC-1D23-ABC1D23-mercosul] PASSED [ 42%]
+tests/test_validator.py::test_placas_validas[AAA0A00-AAA0A00-mercosul] PASSED [ 44%]
+tests/test_validator.py::test_placas_validas[ZZZ9Z99-ZZZ9Z99-mercosul] PASSED [ 46%]
+tests/test_validator.py::test_placas_validas[AAA-0000-AAA0000-antigo] PASSED [ 48%]
+tests/test_validator.py::test_placas_validas[ZZZ-9999-ZZZ9999-antigo] PASSED [ 50%]
+tests/test_validator.py::test_placas_invalidas[None-ENTRADA_NULA] PASSED [ 52%]
+tests/test_validator.py::test_placas_invalidas[1234567-TIPO_INVALIDO] PASSED [ 54%]
+tests/test_validator.py::test_placas_invalidas[entrada2-TIPO_INVALIDO] PASSED [ 56%]
+tests/test_validator.py::test_placas_invalidas[-ENTRADA_VAZIA] PASSED    [ 58%]
+tests/test_validator.py::test_placas_invalidas[   -ENTRADA_VAZIA] PASSED [ 60%]
+tests/test_validator.py::test_placas_invalidas[ABC123-TAMANHO_INVALIDO] PASSED [ 62%]
+tests/test_validator.py::test_placas_invalidas[ABC12345-TAMANHO_INVALIDO] PASSED [ 64%]
+tests/test_validator.py::test_placas_invalidas[A-TAMANHO_INVALIDO] PASSED [ 66%]
+tests/test_validator.py::test_placas_invalidas[ABC 1234-TAMANHO_INVALIDO] PASSED [ 68%]
+tests/test_validator.py::test_placas_invalidas[AB-C-1234-TAMANHO_INVALIDO] PASSED [ 70%]
+tests/test_validator.py::test_placas_invalidas[ABC!234-CARACTERE_INVALIDO] PASSED [ 72%]
+tests/test_validator.py::test_placas_invalidas[\xc1BC1234-CARACTERE_INVALIDO] PASSED [ 74%]
+tests/test_validator.py::test_placas_invalidas[AB\xc71234-CARACTERE_INVALIDO] PASSED [ 76%]
+tests/test_validator.py::test_placas_invalidas[ABC_1234-TAMANHO_INVALIDO] PASSED [ 78%]
+tests/test_validator.py::test_placas_invalidas[ABC12@4-CARACTERE_INVALIDO] PASSED [ 80%]
+tests/test_validator.py::test_placas_invalidas[1234ABC-FORMATO_DESCONHECIDO] PASSED [ 82%]
+tests/test_validator.py::test_placas_invalidas[ABCD123-FORMATO_DESCONHECIDO] PASSED [ 84%]
+tests/test_validator.py::test_placas_invalidas[AB1C234-FORMATO_DESCONHECIDO] PASSED [ 86%]
+tests/test_validator.py::test_placas_invalidas[ABCDEFG-FORMATO_DESCONHECIDO] PASSED [ 88%]
+tests/test_validator.py::test_placas_invalidas[1234567-FORMATO_DESCONHECIDO] PASSED [ 90%]
+tests/test_validator.py::test_placas_invalidas[ABC1DD3-FORMATO_DESCONHECIDO] PASSED [ 92%]
+tests/test_validator.py::test_normalizador_remove_hifen_separador PASSED [ 94%]
+tests/test_validator.py::test_normalizador_nao_remove_hifen_em_outra_posicao PASSED [ 96%]
+tests/test_validator.py::test_normalizador_nao_remove_hifens_adicionais PASSED [ 98%]
+tests/test_validator.py::test_nucleo_nao_depende_de_framework_web PASSED [100%]
+
+=============================== warnings summary ===============================
+../usr/local/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /usr/local/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.12.15-final-0 _______________
+
+Name                       Stmts   Miss  Cover   Missing
+--------------------------------------------------------
+app/core/__init__.py           0      0   100%
+app/core/normalizador.py       5      0   100%
+app/core/resultado.py         19      0   100%
+app/core/validador.py         25      0   100%
+--------------------------------------------------------
+TOTAL                         49      0   100%
+======================== 50 passed, 1 warning in 6.55s =========================
