@@ -1,8 +1,69 @@
-# BootCamp3
+# BootCamp3 — Validador de Placas Brasileiras
 
-# Validador de Placas Brasileiras
+API e interface web para validação de placas veiculares brasileiras nos padrões **antigo** e **Mercosul**, desenvolvidas em Python com abordagem *Spec-Driven Development* (SDD).
 
-API para validação de placas veiculares brasileiras nos padrões **antigo** e **Mercosul**, desenvolvida em Python com abordagem *Spec-Driven Development* (SDD).
+O projeto conta com uma interface visual para facilitar a utilização do sistema, além de uma API HTTP documentada, núcleo de validação independente.
+
+---
+
+## Guia rápido — Como executar o projeto
+
+A maneira recomendada de executar o projeto é utilizando Docker Compose. Assim, não é necessário instalar manualmente as dependências Python.
+
+### 1. Pré-requisitos
+
+- Git instalado.
+- Docker Desktop instalado e em execução.
+- Conexão com a internet na primeira execução, para baixar a imagem e as dependências necessárias.
+
+### 2. Clonar o repositório
+
+Abra o terminal e execute:
+
+```bash
+git clone https://github.com/0GabrielF0/BootCamp3.git
+cd BootCamp3
+```
+
+### 3. Iniciar a aplicação
+
+Execute:
+
+```bash
+docker compose up --build -d
+```
+
+O Docker irá construir a imagem e iniciar a aplicação.
+
+### 4. Acessar o sistema
+
+Depois que o contêiner estiver iniciado, acesse pelo navegador:
+
+| Recurso | Endereço |
+|---|---|
+| Interface visual PlacaCheck | http://localhost:8000/ |
+| Documentação interativa da API | http://localhost:8000/docs |
+| Verificação de disponibilidade | http://localhost:8000/health |
+
+Na interface PlacaCheck, informe uma placa brasileira e clique em **Validar placa** para visualizar o resultado.
+
+### 5. Executar os testes automatizados
+
+Para executar a suíte de testes no ambiente Docker:
+
+```bash
+docker compose run --rm tests
+```
+
+### 6. Encerrar a aplicação
+
+Quando terminar de utilizar o sistema:
+
+```bash
+docker compose down
+```
+
+---
 
 ## Integrantes
 
@@ -19,6 +80,11 @@ API para validação de placas veiculares brasileiras nos padrões **antigo** e 
 
 O Validador de Placas Brasileiras recebe uma placa informada pelo usuário, normaliza sua representação e verifica se ela corresponde a um dos formatos definidos na especificação do projeto.
 
+O sistema disponibiliza duas formas de utilização:
+
+- **Interface web:** aplicação visual desenvolvida com HTML, CSS e JavaScript, permitindo inserir placas e visualizar os resultados da validação.
+- **API HTTP:** serviço desenvolvido com FastAPI, responsável por receber as requisições e retornar os resultados estruturados.
+
 São considerados dois padrões:
 
 | Padrão | Exemplo |
@@ -34,7 +100,7 @@ O projeto utiliza **Spec-Driven Development (SDD)**, mantendo a especificação 
 
 ### Funcionalidades implementadas
 
-- Recebimento de placas por meio de uma API HTTP.
+- Recebimento de placas por meio da interface web e da API HTTP.
 - Normalização de espaços externos e letras minúsculas.
 - Aceitação do padrão antigo com ou sem hífen separador.
 - Validação dos padrões antigo e Mercosul.
@@ -42,6 +108,8 @@ O projeto utiliza **Spec-Driven Development (SDD)**, mantendo a especificação 
 - Retorno estruturado para resultados válidos e inválidos.
 - Identificação de motivos de rejeição.
 - Validação do corpo da requisição e tratamento estruturado de erros.
+- Interface visual responsiva para interação com o usuário.
+- Comunicação entre a interface web e a API.
 - Endpoint de saúde da aplicação.
 - Testes automatizados para o núcleo e a API.
 
@@ -60,13 +128,18 @@ A validação verifica apenas a conformidade do texto informado com os formatos 
 - **Python** — linguagem de implementação.
 - **FastAPI** — exposição das funcionalidades por API HTTP.
 - **Pydantic** — validação dos dados recebidos pela API.
+- **HTML** — estrutura da interface web.
+- **CSS** — estilização e responsividade da interface.
+- **JavaScript** — interação com o usuário e comunicação com a API.
 - **pytest** — execução dos testes automatizados.
-- **Docker** — previsto para padronizar a execução do ambiente.
+- **Docker** — padronização da execução do ambiente.
 - **Git e GitHub** — controle de versão, colaboração e revisão de código.
 
 ## 4. Arquitetura
 
-A aplicação separa as regras de negócio da camada HTTP. O núcleo de validação pode ser executado independentemente da API, facilitando testes, manutenção e evolução.
+A aplicação separa as regras de negócio da camada HTTP e da interface visual. O núcleo de validação pode ser executado independentemente da API, facilitando testes, manutenção e evolução.
+
+A interface web é servida pela própria aplicação FastAPI, sem necessidade de executar um servidor separado para o front-end.
 
 ### Componentes principais
 
@@ -75,8 +148,11 @@ A aplicação separa as regras de negócio da camada HTTP. O núcleo de validaç
 | `app/core/normalizador.py` | Normaliza a entrada conforme as regras definidas. |
 | `app/core/resultado.py` | Define os tipos de resultado, padrões e motivos de rejeição. |
 | `app/core/validador.py` | Aplica as regras de validação das placas. |
-| `app/main.py` | Configura a aplicação FastAPI e seus endpoints. |
+| `app/main.py` | Configura a aplicação FastAPI, os endpoints e a disponibilização da interface. |
 | `app/schemas.py` | Define os modelos de entrada e saída da API. |
+| `app/static/index.html` | Estrutura da interface web PlacaCheck. |
+| `app/static/style.css` | Estilização visual e adaptação da interface para diferentes telas. |
+| `app/static/script.js` | Controla a interação do usuário e a comunicação com a API. |
 | `tests/test_validator.py` | Testa o núcleo de normalização e validação. |
 | `tests/test_api.py` | Testa os endpoints e os contratos HTTP. |
 
@@ -108,28 +184,39 @@ flowchart TD
     style X fill:#F4CCCC,color:#990000,stroke:#CC0000
 ```
 
-
 ### Diagrama de arquitetura
 
 ```mermaid
 flowchart TD
-    A["Cliente HTTP"] --> B["API FastAPI"]
-    B --> C["Schemas Pydantic"]
-    C --> D["Núcleo de validação"]
-    D --> E["Normalizador"]
-    E --> F["Validador"]
-    F --> G["Resultado estruturado"]
-    G --> H["Resposta JSON"]
-    H --> A
-    T["Testes pytest"] --> D
-    T --> B
+    U["Usuário"] --> UI["Interface PlacaCheck"]
+    UI --> JS["JavaScript"]
+    JS --> API["API FastAPI"]
+    API --> S["Schemas Pydantic"]
+    S --> CORE["Núcleo de validação"]
+    CORE --> N["Normalizador"]
+    N --> V["Validador"]
+    V --> R["Resultado estruturado"]
+    R --> API
+    API --> JS
+    JS --> UI
+
+    T["Testes pytest"] --> CORE
+    T --> API
 ```
-    
+
 ## 5. Contrato da API
+
+A aplicação disponibiliza endpoints HTTP para interação e consulta.
 
 ### `GET /`
 
-Retorna informações básicas sobre a aplicação.
+Disponibiliza a interface web PlacaCheck, permitindo que o usuário utilize o sistema diretamente pelo navegador.
+
+Endereço:
+
+```text
+http://localhost:8000/
+```
 
 ### `GET /health`
 
@@ -180,9 +267,11 @@ Exemplo de resposta para uma placa inválida:
 ```
 
 Entradas inválidas do ponto de vista das regras de negócio retornam um resultado de validação. Requisições com corpo ou tipos de dados incompatíveis são tratadas como erros HTTP de validação.
- 
+
 
 ## 6. Instalação e execução local
+
+Além do Docker, também é possível executar o projeto diretamente em um ambiente Python.
 
 ### Pré-requisitos
 
@@ -212,7 +301,7 @@ python -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
-### Iniciar a API
+### Iniciar a aplicação
 
 ```powershell
 python -m uvicorn app.main:app --reload
@@ -220,7 +309,9 @@ python -m uvicorn app.main:app --reload
 
 Acesse no navegador:
 
-- API e documentação: http://127.0.0.1:8000/docs
+- Interface visual: http://127.0.0.1:8000/
+
+- Documentação da API: http://127.0.0.1:8000/docs
 - Verificação de saúde: http://127.0.0.1:8000/health
 
 Para encerrar o servidor, pressione `Ctrl + C` no terminal.
@@ -235,127 +326,59 @@ python -m pytest -v
 
 Os testes verificam regras de normalização, formatos válidos e inválidos, motivos de rejeição, endpoints e tratamento de requisições.
 
-**Resultado da última execução (2026-10-25):** 50 testes aprovados, 0 falhas, cobertura de 100% em `app/core`. Execução feita no mesmo ambiente do CI (contêiner `python:3.12-slim`) com:
-
-```powershell
-python -m pytest -v --cov=app.core --cov-report=term-missing
-```
-
-A meta de cobertura da especificação (≥ 90% no núcleo) foi atendida. O aviso de depreciação do Starlette sobre `httpx` no `TestClient` não afeta o resultado.
-
-O pipeline do GitHub Actions ([`.github/workflows/tests.yml`](.github/workflows/tests.yml)) executa a mesma suíte a cada push e Pull Request em `main` e `develop`. Histórico: [Actions](https://github.com/0GabrielF0/BootCamp3/actions).
-
-<details>
-<summary>Log completo da execução</summary>
-
-```text
-============================= test session starts ==============================
-platform linux -- Python 3.12.15, pytest-9.1.1, pluggy-1.7.0 -- /usr/local/bin/python
-rootdir: /src
-plugins: cov-7.1.0, anyio-4.15.1
-collecting ... collected 50 items
-
-tests/test_api.py::test_rota_inicial PASSED                              [  2%]
-tests/test_api.py::test_health PASSED                                    [  4%]
-tests/test_api.py::test_api_placa_antiga PASSED                          [  6%]
-tests/test_api.py::test_api_placa_antiga_sem_hifen PASSED                [  8%]
-tests/test_api.py::test_api_placa_mercosul PASSED                        [ 10%]
-tests/test_api.py::test_api_placa_invalida PASSED                        [ 12%]
-tests/test_api.py::test_api_formato_desconhecido PASSED                  [ 14%]
-tests/test_api.py::test_api_campo_ausente PASSED                         [ 16%]
-tests/test_api.py::test_api_tipo_incorreto PASSED                        [ 18%]
-tests/test_api.py::test_api_rota_antiga_nao_existe PASSED                [ 20%]
-tests/test_api.py::test_get_validar_metodo_nao_permitido PASSED          [ 22%]
-tests/test_api.py::test_api_placa_curta_xxx PASSED                       [ 24%]
-tests/test_api.py::test_api_campo_com_nome_errado PASSED                 [ 26%]
-tests/test_api.py::test_api_corpo_nao_json PASSED                        [ 28%]
-tests/test_validator.py::test_placas_validas[ABC-1234-ABC1234-antigo] PASSED [ 30%]
-tests/test_validator.py::test_placas_validas[ABC1234-ABC1234-antigo] PASSED [ 32%]
-tests/test_validator.py::test_placas_validas[ abc-1234 -ABC1234-antigo] PASSED [ 34%]
-tests/test_validator.py::test_placas_validas[abc1234-ABC1234-antigo] PASSED [ 36%]
-tests/test_validator.py::test_placas_validas[ABC1D23-ABC1D23-mercosul] PASSED [ 38%]
-tests/test_validator.py::test_placas_validas[abc1d23-ABC1D23-mercosul] PASSED [ 40%]
-tests/test_validator.py::test_placas_validas[ABC-1D23-ABC1D23-mercosul] PASSED [ 42%]
-tests/test_validator.py::test_placas_validas[AAA0A00-AAA0A00-mercosul] PASSED [ 44%]
-tests/test_validator.py::test_placas_validas[ZZZ9Z99-ZZZ9Z99-mercosul] PASSED [ 46%]
-tests/test_validator.py::test_placas_validas[AAA-0000-AAA0000-antigo] PASSED [ 48%]
-tests/test_validator.py::test_placas_validas[ZZZ-9999-ZZZ9999-antigo] PASSED [ 50%]
-tests/test_validator.py::test_placas_invalidas[None-ENTRADA_NULA] PASSED [ 52%]
-tests/test_validator.py::test_placas_invalidas[1234567-TIPO_INVALIDO] PASSED [ 54%]
-tests/test_validator.py::test_placas_invalidas[entrada2-TIPO_INVALIDO] PASSED [ 56%]
-tests/test_validator.py::test_placas_invalidas[-ENTRADA_VAZIA] PASSED    [ 58%]
-tests/test_validator.py::test_placas_invalidas[   -ENTRADA_VAZIA] PASSED [ 60%]
-tests/test_validator.py::test_placas_invalidas[ABC123-TAMANHO_INVALIDO] PASSED [ 62%]
-tests/test_validator.py::test_placas_invalidas[ABC12345-TAMANHO_INVALIDO] PASSED [ 64%]
-tests/test_validator.py::test_placas_invalidas[A-TAMANHO_INVALIDO] PASSED [ 66%]
-tests/test_validator.py::test_placas_invalidas[ABC 1234-TAMANHO_INVALIDO] PASSED [ 68%]
-tests/test_validator.py::test_placas_invalidas[AB-C-1234-TAMANHO_INVALIDO] PASSED [ 70%]
-tests/test_validator.py::test_placas_invalidas[ABC!234-CARACTERE_INVALIDO] PASSED [ 72%]
-tests/test_validator.py::test_placas_invalidas[\xc1BC1234-CARACTERE_INVALIDO] PASSED [ 74%]
-tests/test_validator.py::test_placas_invalidas[AB\xc71234-CARACTERE_INVALIDO] PASSED [ 76%]
-tests/test_validator.py::test_placas_invalidas[ABC_1234-TAMANHO_INVALIDO] PASSED [ 78%]
-tests/test_validator.py::test_placas_invalidas[ABC12@4-CARACTERE_INVALIDO] PASSED [ 80%]
-tests/test_validator.py::test_placas_invalidas[1234ABC-FORMATO_DESCONHECIDO] PASSED [ 82%]
-tests/test_validator.py::test_placas_invalidas[ABCD123-FORMATO_DESCONHECIDO] PASSED [ 84%]
-tests/test_validator.py::test_placas_invalidas[AB1C234-FORMATO_DESCONHECIDO] PASSED [ 86%]
-tests/test_validator.py::test_placas_invalidas[ABCDEFG-FORMATO_DESCONHECIDO] PASSED [ 88%]
-tests/test_validator.py::test_placas_invalidas[1234567-FORMATO_DESCONHECIDO] PASSED [ 90%]
-tests/test_validator.py::test_placas_invalidas[ABC1DD3-FORMATO_DESCONHECIDO] PASSED [ 92%]
-tests/test_validator.py::test_normalizador_remove_hifen_separador PASSED [ 94%]
-tests/test_validator.py::test_normalizador_nao_remove_hifen_em_outra_posicao PASSED [ 96%]
-tests/test_validator.py::test_normalizador_nao_remove_hifens_adicionais PASSED [ 98%]
-tests/test_validator.py::test_nucleo_nao_depende_de_framework_web PASSED [100%]
-
-=============================== warnings summary ===============================
-../usr/local/lib/python3.12/site-packages/fastapi/testclient.py:1
-  /usr/local/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
-    from starlette.testclient import TestClient as TestClient  # noqa
-
--- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-================================ tests coverage ================================
-_______________ coverage: platform linux, python 3.12.15-final-0 _______________
-
-Name                       Stmts   Miss  Cover   Missing
---------------------------------------------------------
-app/core/__init__.py           0      0   100%
-app/core/normalizador.py       5      0   100%
-app/core/resultado.py         19      0   100%
-app/core/validador.py         25      0   100%
---------------------------------------------------------
-TOTAL                         49      0   100%
-======================== 50 passed, 1 warning in 7.38s =========================
-```
-
-</details>
+**Resultado da última execução registrada (2026-10-25):** 50 testes aprovados, 0 falhas, cobertura de 100% em `app/core`. Execução feita no mesmo ambiente do CI (contêiner `python:3.12-slim`)
 
 
 ## 8. Execução com Docker
 
-O projeto prevê a padronização do ambiente por meio de Docker, de modo que a API possa ser executada de maneira reproduzível.
+O projeto utiliza Docker para padronizar o ambiente e permitir que a aplicação seja executada de maneira reproduzível em diferentes máquinas.
 
-O `Dockerfile` usa `python:3.12-slim` (mesma versão do CI) e o `compose.yaml` publica a API na porta 8000. Para executar:
+O `Dockerfile` utiliza a imagem `python:3.12-slim`, e o `compose.yaml` configura os serviços da aplicação e dos testes automatizados.
+
+### Iniciar a aplicação
 
 ```powershell
-docker compose up --build
+docker compose up --build -d
 ```
 
-A API fica disponível em `http://127.0.0.1:8000/docs`. Verificação feita em 2026-10-25:
+A interface web fica disponível em:
 
 ```text
-$ curl http://127.0.0.1:8000/health
-{"status":"ok"}
-$ curl -X POST http://127.0.0.1:8000/validar -H "Content-Type: application/json" -d '{"placa":"abc1d23"}'
-{"valida":true,"placa_normalizada":"ABC1D23","padrao":"mercosul","motivo":null,"mensagem":"Placa válida no padrão Mercosul."}
+http://localhost:8000/
 ```
 
-Para rodar o harness no ambiente padronizado:
+A documentação da API fica disponível em:
+
+```text
+http://localhost:8000/docs
+```
+
+A verificação de saúde pode ser acessada em:
+
+```text
+http://localhost:8000/health
+```
+
+### Executar os testes no Docker
 
 ```powershell
 docker compose run --rm tests
 ```
 
-A última execução está versionada em [`logs_testes_final.txt`](logs_testes_final.txt). O roteiro completo de demonstração está em [`docs/DEMO.md`](docs/DEMO.md).
 
+**Verificação anterior da API (2026-10-25):**
+
+```text
+$ curl http://127.0.0.1:8000/health
+{"status":"ok"}
+
+$ curl -X POST http://127.0.0.1:8000/validar -H "Content-Type: application/json" -d '{"placa":"abc1d23"}'
+{"valida":true,"placa_normalizada":"ABC1D23","padrao":"mercosul","motivo":null,"mensagem":"Placa válida no padrão Mercosul."}
+```
+
+O resultado acima registra a verificação anterior da API. A interface visual deve ser conferida também no ambiente Docker após sua integração.
+
+A última execução registrada dos testes está versionada em [`logs_testes_final.txt`](logs_testes_final.txt). O roteiro completo de demonstração está em [`docs/DEMO.md`](docs/DEMO.md).
 
 ## 9. Spec-Driven Development (SDD)
 
@@ -372,7 +395,7 @@ Documentos do fluxo SDD:
 
 O desenvolvimento é orientado por especificações versionadas. As decisões de implementação estão alinhadas aos requisitos funcionais, não funcionais, regras de negócio e contratos documentados.
 
-Fluxo adotado:
+### Fluxo adotado
 
 ```mermaid
 flowchart TD
@@ -393,8 +416,6 @@ Documentos de referência do projeto:
 - `docs/components.md` — arquitetura e responsabilidades dos componentes.
 - `docs/spec-changelog.md` — histórico e justificativas das alterações na especificação.
 
-As alterações nas especificações devem ser revisadas e versionadas, com registro do motivo da mudança e de seu impacto nos testes.
-
 ## 10. ADRs — Registros de Decisões Arquiteturais
 
 Os ADRs (*Architecture Decision Records*) documentam as principais decisões técnicas, suas justificativas e consequências. Cada decisão fica versionada em um arquivo próprio em [`docs/adr/`](docs/adr/).
@@ -414,11 +435,10 @@ Os ADRs (*Architecture Decision Records*) documentam as principais decisões té
 O projeto adota o fluxo:
 
 ```text
-feature/* → develop → main
+feature/*  → main
 ```
 
 - **`main`:** versão principal e estável.
-- **`develop`:** integração das funcionalidades aprovadas.
 - **`feature/*`:** desenvolvimento de funcionalidades.
 
 As contribuições devem ser feitas por branches e Pull Requests, com descrição das alterações e revisão por outro integrante. A branch `main` respeita as regras de proteção configuradas no repositório.
@@ -435,31 +455,27 @@ O uso de Git e Pull Requests reforça a importância de preservar o histórico d
 
 ### Uso de inteligência artificial
 
-A inteligência artificial foi utilizada como apoio à implementação, à revisão de código, à criação e correção de testes e à organização da documentação. As sugestões precisaram ser verificadas pela equipe por meio da leitura do código e da execução dos testes.
+A inteligência artificial foi utilizada como apoio à implementação, à revisão de código e correção de testes.
 
 O uso de IA não substitui a responsabilidade dos integrantes pela correção, segurança e conformidade da solução com a especificação. As decisões técnicas e a aceitação das alterações continuam sob responsabilidade do grupo.
-
-### Pontos de melhoria
-
-- Abrir os próximos Pull Requests com base em `develop`, seguindo o fluxo definido no ADR-006.
-- Manter a associação explícita entre testes e IDs de casos de teste (CT) da especificação.
 
 
 ## 13. Status do projeto
 
-**Implementação e testes locais: funcionalidade principal implementada.**
+**Implementação principal:** núcleo de validação, API e interface visual implementados.
 
 - [x] Núcleo de normalização e validação.
 - [x] API com endpoints principais.
 - [x] Respostas estruturadas de validação.
-- [x] Testes automatizados: 50 aprovados, cobertura de 100% no núcleo.
+- [x] Testes automatizados: 50 aprovados na última execução registrada.
+- [x] Cobertura de 100% no núcleo na última execução registrada.
 - [x] Pipeline de CI no GitHub Actions.
-- [x] Execução com Docker Compose verificada.
+- [x] Configuração de execução com Docker Compose.
 - [x] ADRs em arquivos individuais ([`docs/adr/`](docs/adr/)).
 - [x] Instruções para agentes de IA ([`CLAUDE.md`](CLAUDE.md), [`AGENTS.md`](AGENTS.md)).
+- [x] Interface web PlacaCheck com HTML, CSS e JavaScript.
+
 
 ---
 
 **Projeto acadêmico — Validador de Placas Brasileiras**
-
-Desenvolvido como atividade colaborativa de engenharia de software, com foco em especificação, arquitetura, testes automatizados, governança de código e uso responsável de ferramentas de inteligência artificial.
