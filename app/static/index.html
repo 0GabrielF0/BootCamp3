@@ -1,0 +1,118 @@
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlacaCheck | Validador de Placas</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <header class="topbar">
+        <div class="container nav-content">
+            <a href="/" class="brand">
+                <span class="brand-icon">P</span>
+                <span>PlacaCheck</span>
+            </a>
+            <span class="system-status">
+                <span class="status-dot"></span>
+                Sistema de validação
+            </span>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <span class="eyebrow">VALIDAÇÃO INTELIGENTE</span>
+            <h1>Consulte a validade de uma placa.</h1>
+            <p>
+                Verifique rapidamente se uma placa brasileira segue
+                os padrões oficiais Antigo ou Mercosul.
+            </p>
+        </section>
+
+        <section class="validator-card">
+            <div class="card-heading">
+                <div>
+                    <h2>Validar placa</h2>
+                    <p>Digite a combinação de letras e números.</p>
+                </div>
+                <span class="card-icon">⌕</span>
+            </div>
+
+            <form id="form-validacao">
+                <label for="placa">PLACA DO VEÍCULO</label>
+                <div class="input-group">
+                    <input
+                        type="text"
+                        id="placa"
+                        name="placa"
+                        placeholder="Ex.: ABC1D23"
+                        maxlength="10"
+                        autocomplete="off"
+                        required
+                    >
+                    <button type="submit" id="btn-validar">
+                        Validar placa
+                    </button>
+                </div>
+                <span class="input-hint">
+                    Exemplos: ABC-1234 (Antigo) ou ABC1D23 (Mercosul).
+                </span>
+            </form>
+
+            <div id="resultado" class="result hidden" aria-live="polite">
+                <div class="result-header">
+                    <h3 id="resultado-titulo">Resultado</h3>
+                    <span id="resultado-status"></span>
+                </div>
+                <p id="resultado-mensagem"></p>
+                <div class="result-details">
+                    <div>
+                        <span>PLACA NORMALIZADA</span>
+                        <strong id="resultado-placa">—</strong>
+                    </div>
+                    <div>
+                        <span>PADRÃO IDENTIFICADO</span>
+                        <strong id="resultado-padrao">—</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="formats">
+            <div class="section-heading">
+                <span class="eyebrow">PADRÕES SUPORTADOS</span>
+                <h2>Dois formatos. Uma validação.</h2>
+            </div>
+
+            <div class="format-grid">
+                <article class="format-card">
+                    <span class="format-number">01</span>
+                    <h3>Modelo antigo</h3>
+                    <div class="plate old-plate">ABC-1234</div>
+                    <p>Três letras seguidas de quatro números.</p>
+                </article>
+
+                <article class="format-card">
+                    <span class="format-number">02</span>
+                    <h3>Modelo Mercosul</h3>
+                    <div class="plate mercosul-plate">ABC1D23</div>
+                    <p>Três letras, um número, uma letra e dois números.</p>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <span>PlacaCheck</span>
+            <span>Validador de Placas Brasileiras · 2026</span>
+        </div>
+    </footer>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
+```

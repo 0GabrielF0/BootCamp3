@@ -1,7 +1,11 @@
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from pathlib import Path
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+
 
 from app.core.validador import validar_placa
 from app.schemas import (
@@ -18,14 +22,17 @@ app = FastAPI(
     version="1.0.0",
 )
 
+DIRETORIO_STATIC = Path(__file__).parent / "static"
 
-@app.get("/")
+app.mount(
+    "/static",
+    StaticFiles(directory=DIRETORIO_STATIC),
+    name="static",
+)
+
+@app.get("/", include_in_schema=False)
 def inicio():
-    return {
-        "projeto": "Validador de Placas Brasileiras",
-        "status": "operacional",
-        "documentacao": "/docs",
-    }
+    return FileResponse(DIRETORIO_STATIC / "index.html")
 
 
 @app.get("/health")

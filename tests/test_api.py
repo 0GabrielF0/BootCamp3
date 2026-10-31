@@ -10,7 +10,8 @@ def test_rota_inicial():
     resposta = client.get("/")
 
     assert resposta.status_code == 200
-    assert resposta.json()["status"] == "operacional"
+    assert "text/html" in resposta.headers["content-type"]
+    assert "PlacaCheck" in resposta.text
 
 
 def test_health():
