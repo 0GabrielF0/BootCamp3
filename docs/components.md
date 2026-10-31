@@ -26,9 +26,6 @@ rotas e handlers em `app/main.py` e os schemas em `app/schemas.py`: com três ro
 três handlers, a subpasta não trazia ganho de organização. A separação domínio × borda
 (RNF-01), que é o que a decomposição exige, foi mantida.
 
-`app/validator.py` é um módulo de compatibilidade que apenas reexporta `normalizar` e
-`validar_placa` de `app/core/`. Não contém regra e não é usado pela API.
-
 **Regra de dependência (obrigatória):** as setas apontam sempre da borda para o domínio.
 Nenhum módulo em `app/core/` pode importar `fastapi`, `pydantic`, `starlette` ou módulos
 da borda. Essa regra é verificada por um teste automatizado (ver §6).

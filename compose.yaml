@@ -1,4 +1,3 @@
-
 services:
   api:
     build: .
@@ -6,3 +5,9 @@ services:
     ports:
       - "8000:8000"
     restart: unless-stopped
+
+  tests:
+    build: .
+    command: python -m pytest -v --cov=app.core --cov-report=term-missing -p no:cacheprovider
+    volumes:
+      - .:/app
