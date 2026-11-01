@@ -1,8 +1,8 @@
 # Especificação Técnica — Validador de Placas Brasileiras
 
-**Versão:** 1.1
-**Data:** 2026-10-21
-**Status:** Aprovada; alinhada à implementação na Entrega 2 (ver [`spec-changelog.md`](./spec-changelog.md))
+**Versão:** 2.0
+**Data:** 2026-10-31
+**Status:** Proposta para revisão; alinhada à implementação com interface web (ver [`spec-changelog.md`](./spec-changelog.md))
 
 ---
 
@@ -17,7 +17,8 @@ consultas que nunca retornam resultado e inconsistência entre bases.
 Este projeto entrega um **validador de formato** de placas brasileiras, exposto como:
 
 1. uma **função núcleo** pura, sem dependência de framework; e
-2. uma **API HTTP** (FastAPI) que expõe essa função.
+2. uma **API HTTP** (FastAPI) que expõe essa função; e
+3. uma **interface web** (PlacaCheck), servida pela própria API, que consome `POST /validar`.
 
 Dada uma placa em texto, o sistema informa se ela é **válida**, qual o **padrão**
 identificado (antigo ou Mercosul) e, em caso de rejeição, **por que** foi rejeitada.
@@ -40,6 +41,7 @@ Legenda: `A` = letra A–Z, `9` = dígito 0–9.
 - Identificação do padrão da placa válida.
 - Motivo estruturado da rejeição.
 - Exposição por API HTTP com contrato documentado.
+- Interface web para uso da validação pelo navegador.
 - Suíte de testes automatizados rastreável a esta especificação.
 
 **Está FORA do escopo (não-objetivos):**
@@ -53,7 +55,6 @@ Legenda: `A` = letra A–Z, `9` = dígito 0–9.
 - Conversão entre padrão antigo e Mercosul.
 - OCR / leitura de placa a partir de imagem.
 - Persistência em banco de dados, autenticação e autorização.
-- Interface gráfica (front-end).
 
 ---
 
@@ -71,6 +72,7 @@ Legenda: `A` = letra A–Z, `9` = dígito 0–9.
 | **RF-08** | A API deve rejeitar corpo malformado ou campo ausente com erro estruturado. | Retorna `422` no formato §5.4. |
 | **RF-09** | A função núcleo deve ser utilizável sem subir a API. | Import direto do módulo núcleo, sem importar FastAPI. |
 | **RF-10** | A API deve expor um endpoint de verificação de saúde `GET /health`. | Retorna `200` com `{"status": "ok"}`. |
+| **RF-11** | O sistema deve oferecer uma interface web para informar uma placa e ver o resultado, servida pela própria aplicação em `GET /`. | `GET /` retorna `200` com a página PlacaCheck; a página exibe o resultado de `POST /validar`. |
 
 ---
 
@@ -293,20 +295,21 @@ Formato do objeto de erro:
 { "status": "ok" }
 ```
 
-### 5.7 `GET /` — identificação do serviço
+### 5.7 `GET /` — interface web
 
-Rota informativa, sem regra de negócio. Indica que a API está no ar e onde está a
-documentação OpenAPI (RNF-08).
+Substitui a resposta JSON de identificação do serviço definida na v1.1. A rota serve a página
+PlacaCheck (RF-11) e fica fora do esquema OpenAPI. A documentação da API continua em `/docs`
+(RNF-08).
 
-**Resposta — `200 OK`**
+**Resposta — `200 OK`**, `Content-Type: text/html`: documento HTML iniciado por `<!DOCTYPE html>`.
 
-```json
-{
-  "projeto": "Validador de Placas Brasileiras",
-  "status": "operacional",
-  "documentacao": "/docs"
-}
-```
+### 5.8 `GET /static/*` — arquivos da interface
+
+Serve `style.css` e `script.js`, usados pela página. Arquivo inexistente retorna `404` no
+formato de §5.4.
+
+A interface não decide a validade da placa: quem decide é `POST /validar`, e a página apenas
+exibe a resposta. Sem conexão com a API, ela informa o erro ao usuário.
 
 ---
 
@@ -369,8 +372,10 @@ Cada caso referencia o ID da regra que verifica, para rastreabilidade na suíte 
 | CT-39 | `POST /validar` com corpo não-JSON | `422` | §5.4 |
 | CT-40 | `GET /validar` | `405` | §5.4 |
 | CT-41 | `GET /health` | `200` | `{"status": "ok"}` |
-| CT-42 | `GET /` | `200` | §5.7, `status: "operacional"` |
+| CT-42 | **OBSOLETO na v2.0** (substituído por CT-44). `GET /` | `200` | Corpo JSON da v1.1 |
 | CT-43 | `POST /validate` com `{"placa": "ABC-1234"}` | `404` | Rota antiga não existe (RF-07) |
+| CT-44 | `GET /` | `200` | §5.7, HTML iniciado por `<!DOCTYPE html>` com a página PlacaCheck |
+| CT-45 | `GET /static/style.css` e `GET /static/script.js` | `200` | §5.8 |
 
 ---
 
@@ -381,6 +386,8 @@ Cada caso referencia o ID da regra que verifica, para rastreabilidade na suíte 
 | Testes do núcleo (`tests/test_validator.py`) | CT-01 a CT-33; RN-01 a RN-12 |
 | Testes do normalizador (`tests/test_validator.py`) | RN-03, RN-11 |
 | Teste de arquitetura (`tests/test_validator.py::test_nucleo_nao_depende_de_framework_web`) | RNF-01, RF-09 |
-| Testes da API (`tests/test_api.py`) | CT-34 a CT-43; RF-07, RF-08, RF-10 |
+| Testes da API (`tests/test_api.py`) | CT-34 a CT-41, CT-43 a CT-45; RF-07, RF-08, RF-10, RF-11, RNF-08 |
+| Teste de desempenho (`tests/test_validator.py::test_validacao_responde_em_menos_de_5_ms`) | RNF-03 |
+| Comportamento da página no navegador (`docs/DEMO.md`, verificação manual) | RF-11 |
 | Decomposição em componentes | `docs/components.md` |
 | Histórico de refinamentos desta spec | `docs/spec-changelog.md` |

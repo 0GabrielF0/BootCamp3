@@ -38,6 +38,33 @@ resultado de testes. Atende ao item **"Refinamento por Feedback"** da Entrega 1.
 
 ---
 
+## v2.0 — 2026-10-31
+
+**Origem:** auditoria do repositório contra os critérios das Entregas 1 e 2, depois dos PRs #16 e #17.
+**Autor:** Adler Murga Ferreira (RA 22511624), com apoio do Claude Code
+
+**O que mudou**
+- `spec.md` §1 e §1.2: a interface web passa a fazer parte do escopo; deixa de constar como não-objetivo.
+- `spec.md` §2: novo RF-11 (interface web).
+- `spec.md` §5.7: `GET /` passa a servir a página PlacaCheck em HTML, no lugar do JSON de identificação.
+- `spec.md` §5.8 (novo): `GET /static/*`.
+- `spec.md` §6.3: CT-42 marcado como `OBSOLETO`; novos CT-44 e CT-45.
+- `spec.md` §7 e `components.md`: novo componente C7 e rastreabilidade atualizada.
+- Testes passam a citar o ID de CT/RF/RN/RNF que verificam, resolvendo P-06.
+
+**Motivo**
+- Os PRs #16 e #17 adicionaram a interface e mudaram `GET /` sem atualizar a spec, que ainda a declarava
+  fora do escopo (ver E-08 em `ERROS.md`). A interface foi revisada e aprovada pelo grupo; por isso a spec
+  foi ajustada a ela. É versão MAIOR porque o formato de resposta de `GET /` mudou.
+
+**Impacto**
+- IDs afetados: RF-11 (novo), CT-42 (obsoleto), CT-44 e CT-45 (novos).
+- Testes a criar/ajustar: entradas exatas de CT-03, CT-04 e CT-05 (E-09); CT-44, CT-45, RNF-03 e RNF-08;
+  corpo de erro verificado em CT-36 e CT-39. A suíte passou de 50 para 56 testes (execução local em
+  `logs_testes_local.txt`; repetir com `docker compose run --rm tests`).
+- Código a ajustar: removidas de `app/static/index.html` as marcações de bloco de código (E-10).
+  Nenhuma regra de negócio mudou.
+
 ## v1.1.1 — 2026-10-25
 
 **Origem:** auditoria do repositório contra os critérios das Entregas 1 e 2.
@@ -159,5 +186,5 @@ ajustada a ela.
 | P-03 | Aceitar separador diferente de hífen (espaço, ponto). | Se os testes apontarem entrada real nesse formato. |
 | P-04 | Internacionalização das mensagens. | Fora do escopo enquanto RNF-07 valer. |
 | P-05 | **Resolvida na v1.1.1.** Cobrir na API os casos CT-35 (`"XXX"`), CT-36 (`{"plaka": ...}`) e CT-39 (corpo não-JSON), ainda sem teste. | Antes da entrega final. |
-| P-06 | Marcar cada teste com o ID do CT/RN que verifica (RNF-05), para rastreabilidade direta no relatório de testes. | Antes da entrega final. |
+| P-06 | **Resolvida na v2.0.** Marcar cada teste com o ID do CT/RN que verifica (RNF-05), para rastreabilidade direta no relatório de testes. | Antes da entrega final. |
 | P-07 | **Resolvida na v1.1.1.** Remover `app/validator.py` quando nada mais depender do caminho antigo. | Próxima limpeza de código. |
