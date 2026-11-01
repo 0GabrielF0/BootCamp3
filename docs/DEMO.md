@@ -63,5 +63,5 @@ curl http://127.0.0.1:8000/validar
 
 ```bash
 docker compose run --rm tests
-# ... 56 passed
+# ... 61 passed
 ```

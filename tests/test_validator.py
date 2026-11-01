@@ -60,6 +60,8 @@ def test_placas_validas(entrada, normalizada, padrao):
         ("ABCDEFG", Motivo.FORMATO_DESCONHECIDO),  # CT-31, RN-09
         ("1234567", Motivo.FORMATO_DESCONHECIDO),  # CT-32, RN-09
         ("ABC1DD3", Motivo.FORMATO_DESCONHECIDO),  # CT-33, RN-09
+        ("ßa1234", Motivo.TAMANHO_INVALIDO),  # CT-46, RN-03.3
+        ("ſbc1234", Motivo.CARACTERE_INVALIDO),  # CT-47, RN-03.3
     ],
 )
 def test_placas_invalidas(entrada, motivo):
@@ -85,6 +87,11 @@ def test_normalizador_nao_remove_hifen_em_outra_posicao():
 def test_normalizador_nao_remove_hifens_adicionais():
     # RN-11
     assert normalizar("AB-C-1234") == "AB-C-1234"
+
+
+def test_normalizador_nao_transcreve_caracteres_fora_de_ascii():
+    # RN-03.3
+    assert normalizar("ßa1234") == "ßA1234"
 
 
 def test_validacao_responde_em_menos_de_5_ms():

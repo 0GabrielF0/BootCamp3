@@ -83,6 +83,11 @@ não havia relatório de cobertura registrado.
   desde os PRs #16 e #17 (E-08).
 - A suíte passou a ter 56 testes.
 
+**Situação em 2026-10-31 (spec v2.1):**
+
+- A normalização deixou de converter caracteres fora de ASCII em letras válidas (E-11; CT-46 e CT-47).
+- A suíte passou a ter 61 testes.
+
 ## Evidências consultadas
 
 - [`tests/test_validator.py`](../tests/test_validator.py)

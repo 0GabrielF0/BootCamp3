@@ -101,6 +101,17 @@ no [`spec-changelog.md`](./spec-changelog.md).
 - **Prevenção:** ler o diff completo de arquivos gerados com IA antes de aprovar o PR.
 - **Classificação:** implementação.
 
+## E-11 · Caracteres fora de A–Z convertidos em letras válidas
+
+- **Detecção:** teste exploratório na auditoria, com a suíte 100% verde e 100% de cobertura no núcleo.
+- **Causa:** `str.upper()` também converte caracteres fora de ASCII: `ß` vira `SS`, `ſ` vira `S` e `ı` vira `I`.
+  Assim, `ſbc1234` virava `SBC1234` e era aceita. A RN-03 mandava converter para maiúsculas sem delimitar
+  quais caracteres, e a interface repetia a conversão com `toUpperCase()` antes de enviar a placa.
+- **Correção:** a normalização converte apenas letras ASCII, a interface deixou de converter e os casos
+  CT-46 e CT-47 foram criados (spec v2.1). Os testes novos falharam antes da correção.
+- **Prevenção:** casos de borda com caracteres cuja maiúscula muda de forma ou tamanho.
+- **Classificação:** especificação.
+
 ## Lição do ciclo
 
 Os erros E-01 a E-05 passaram por uma suíte 100% verde e só foram encontrados por **revisão

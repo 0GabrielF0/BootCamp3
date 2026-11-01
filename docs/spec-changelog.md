@@ -38,6 +38,25 @@ resultado de testes. Atende ao item **"Refinamento por Feedback"** da Entrega 1.
 
 ---
 
+## v2.1 — 2026-10-31
+
+**Origem:** auditoria do repositório; atende ao item "aprovação total sem falhas conhecidas" da Entrega 3.
+**Autor:** Adler Murga Ferreira (RA 22511624), com apoio do Claude Code
+
+**O que mudou**
+- `spec.md` RN-03 e RN-03.3: a conversão para maiúsculas vale só para letras ASCII `a`–`z`.
+- `spec.md` §5.8: a interface não converte letras; quem normaliza é a API.
+- `spec.md` §6.2: novos CT-46 e CT-47.
+
+**Motivo**
+- A conversão de todo o texto transformava caracteres fora de A–Z em letras válidas, e placas como
+  `ſbc1234` e `ßa1234` eram aceitas (ver E-11 em `ERROS.md`).
+
+**Impacto**
+- IDs afetados: RN-03, RN-03.3, CT-46 e CT-47 (novos).
+- Testes a criar/ajustar: 5 testes novos; a suíte passou de 56 para 61 testes.
+- Código a ajustar: `app/core/normalizador.py` e `app/static/script.js`. Placas com letras de A a Z não mudam de resultado.
+
 ## v2.0 — 2026-10-31
 
 **Origem:** auditoria do repositório contra os critérios das Entregas 1 e 2, depois dos PRs #16 e #17.

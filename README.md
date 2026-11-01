@@ -326,7 +326,7 @@ python -m pytest -v
 
 Os testes verificam regras de normalização, formatos válidos e inválidos, motivos de rejeição, endpoints e tratamento de requisições.
 
-**Resultado da última execução registrada (2026-10-31):** 56 testes aprovados, 0 falhas, cobertura de 100% em `app/core`. Execução local, fora do Docker, com Python 3.12; log em [`logs_testes_local.txt`](logs_testes_local.txt).
+**Resultado da última execução registrada (2026-10-31):** 61 testes aprovados, 0 falhas, cobertura de 100% em `app/core`. Execução local, fora do Docker, com Python 3.12; log em [`logs_testes_local.txt`](logs_testes_local.txt).
 
 **Última execução registrada no Docker (2026-10-25):** 50 testes aprovados, antes dos testes adicionados na spec v2.0; log em [`logs_testes_final.txt`](logs_testes_final.txt).
 
@@ -470,13 +470,13 @@ O uso de IA não substitui a responsabilidade dos integrantes pela correção, s
 - [x] Núcleo de normalização e validação.
 - [x] API com endpoints principais.
 - [x] Respostas estruturadas de validação.
-- [x] Testes automatizados: 56 aprovados na última execução registrada.
+- [x] Testes automatizados: 61 aprovados na última execução registrada.
 - [x] Cobertura de 100% no núcleo na última execução registrada.
 - [x] Pipeline de CI no GitHub Actions.
 - [x] Configuração de execução com Docker Compose.
 - [x] ADRs em arquivos individuais ([`docs/adr/`](docs/adr/)).
 - [x] Instruções para agentes de IA ([`CLAUDE.md`](CLAUDE.md), [`AGENTS.md`](AGENTS.md)).
-- [x] Interface web PlacaCheck com HTML, CSS e JavaScript, incorporada à spec v2.0.
+- [x] Interface web PlacaCheck com HTML, CSS e JavaScript, incorporada à spec.
 
 
 ---

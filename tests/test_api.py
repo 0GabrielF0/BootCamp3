@@ -22,6 +22,20 @@ def test_arquivos_estaticos_da_interface():
         assert client.get(caminho).status_code == 200
 
 
+def test_interface_nao_converte_letras():
+    # RF-11, RN-03.3: a normalização é feita somente pela API
+    assert "toUpperCase" not in client.get("/static/script.js").text
+
+
+def test_api_nao_transcreve_caracteres_fora_de_ascii():
+    # CT-47, RN-03.3
+    resposta = client.post("/validar", json={"placa": "ſbc1234"})
+
+    assert resposta.status_code == 200
+    assert resposta.json()["valida"] is False
+    assert resposta.json()["motivo"] == "CARACTERE_INVALIDO"
+
+
 def test_documentacao_openapi():
     # RNF-08
     assert client.get("/docs").status_code == 200

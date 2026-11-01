@@ -1,6 +1,6 @@
 # Especificação Técnica — Validador de Placas Brasileiras
 
-**Versão:** 2.0
+**Versão:** 2.1
 **Data:** 2026-10-31
 **Status:** Proposta para revisão; alinhada à implementação com interface web (ver [`spec-changelog.md`](./spec-changelog.md))
 
@@ -106,10 +106,10 @@ Legenda: `A` = letra A–Z, `9` = dígito 0–9.
 
 | ID | Regra |
 |---|---|
-| **RN-03** | A entrada deve ser normalizada antes da validação, nesta ordem: (1) remover espaços em branco das pontas (`strip`); (2) converter para MAIÚSCULAS; (3) remover **um** hífen separador, se presente. |
+| **RN-03** | A entrada deve ser normalizada antes da validação, nesta ordem: (1) remover espaços em branco das pontas (`strip`); (2) converter as letras ASCII `a`–`z` para MAIÚSCULAS; (3) remover **um** hífen separador, se presente. |
 | **RN-03.1** | O hífen é **opcional**: `ABC-1234` e `ABC1234` são equivalentes e ambos válidos. |
 | **RN-03.2** | Apenas hífens são removidos. Espaços **internos** não são removidos e invalidam a placa (`ABC 1234` é rejeitada por RN-07). |
-| **RN-03.3** | A normalização não altera, remove ou transcreve acentos. `ÁBC1234` mantém o `Á` e é rejeitada por RN-08. |
+| **RN-03.3** | A normalização não altera, remove ou transcreve acentos nem outros caracteres fora de ASCII. `ÁBC1234` mantém o `Á` e é rejeitada por RN-08; `ſBC1234` mantém o `ſ` e não vira `SBC1234`. |
 | **RN-03.4** | A resposta de sucesso devolve a placa normalizada **sem hífen** e em maiúsculas (forma canônica de 7 caracteres). |
 
 ### 4.3 Rejeição
@@ -308,8 +308,8 @@ PlacaCheck (RF-11) e fica fora do esquema OpenAPI. A documentação da API conti
 Serve `style.css` e `script.js`, usados pela página. Arquivo inexistente retorna `404` no
 formato de §5.4.
 
-A interface não decide a validade da placa: quem decide é `POST /validar`, e a página apenas
-exibe a resposta. Sem conexão com a API, ela informa o erro ao usuário.
+A interface não decide a validade da placa nem converte letras: quem normaliza e decide é
+`POST /validar`, e a página apenas exibe a resposta. Sem conexão com a API, ela informa o erro ao usuário.
 
 ---
 
@@ -359,6 +359,8 @@ Cada caso referencia o ID da regra que verifica, para rastreabilidade na suíte 
 | CT-31 | `"ABCDEFG"` (só letras) | `false` | `FORMATO_DESCONHECIDO` | RN-09 |
 | CT-32 | `"1234567"` (só dígitos) | `false` | `FORMATO_DESCONHECIDO` | RN-09 |
 | CT-33 | `"ABC1DD3"` (6ª posição letra) | `false` | `FORMATO_DESCONHECIDO` | RN-09 |
+| CT-46 | `"ßa1234"` (`ß` não vira `SS`) | `false` | `TAMANHO_INVALIDO` | RN-03.3, RN-07 |
+| CT-47 | `"ſbc1234"` (`ſ` não vira `S`) | `false` | `CARACTERE_INVALIDO` | RN-03.3, RN-08 |
 
 ### 6.3 Casos de contrato da API
 
@@ -383,7 +385,7 @@ Cada caso referencia o ID da regra que verifica, para rastreabilidade na suíte 
 
 | Artefato | Referencia |
 |---|---|
-| Testes do núcleo (`tests/test_validator.py`) | CT-01 a CT-33; RN-01 a RN-12 |
+| Testes do núcleo (`tests/test_validator.py`) | CT-01 a CT-33, CT-46 e CT-47; RN-01 a RN-12 |
 | Testes do normalizador (`tests/test_validator.py`) | RN-03, RN-11 |
 | Teste de arquitetura (`tests/test_validator.py::test_nucleo_nao_depende_de_framework_web`) | RNF-01, RF-09 |
 | Testes da API (`tests/test_api.py`) | CT-34 a CT-41, CT-43 a CT-45; RF-07, RF-08, RF-10, RF-11, RNF-08 |
