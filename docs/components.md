@@ -1,7 +1,7 @@
 # Decomposição em Unidades — Validador de Placas Brasileiras
 
-**Versão:** 1.1
-**Data:** 2026-10-21
+**Versão:** 2.0
+**Data:** 2026-10-31
 **Documento base:** [`spec.md`](./spec.md)
 
 Objetivo: dividir o sistema em unidades independentes e testáveis, de modo que cada uma
@@ -20,6 +20,7 @@ respeitando **RNF-01** (o núcleo não depende de framework web).
 | Borda | C4 — Schemas Pydantic | `app/schemas.py` | Pydantic, C3 (apenas valores) |
 | Borda | C5 — Camada API | `app/main.py` | FastAPI, C2, C4 |
 | Borda | C6 — Tratador de erros | `app/main.py` (handlers registrados na aplicação) | FastAPI, Starlette |
+| Borda | C7 — Interface web PlacaCheck | `app/static/` (`index.html`, `style.css`, `script.js`) | Contrato HTTP de C5 |
 
 Na v1.0 a borda estava prevista em uma subpasta `app/api/`. A implementação concentrou
 rotas e handlers em `app/main.py` e os schemas em `app/schemas.py`: com três rotas e
@@ -138,7 +139,8 @@ sem lógica de decisão.
 |---|---|---|---|
 | `POST` | `/validar` | `ValidarPlacaRequest` | `200` `ValidarPlacaResponse` |
 | `GET` | `/health` | — | `200` `{"status": "ok"}` |
-| `GET` | `/` | — | `200` identificação do serviço (spec §5.7) |
+| `GET` | `/` | — | `200` página PlacaCheck (spec §5.7) |
+| `GET` | `/static/*` | — | `200` arquivos da interface (spec §5.8) |
 
 Fluxo do `POST /validar`:
 
@@ -172,6 +174,19 @@ a classe do FastAPI deixaria esses casos fora do formato de §5.4.
 
 ---
 
+### C7 — Interface web PlacaCheck
+
+**Responsabilidade:** permitir o uso da validação pelo navegador (RF-11). Coleta a placa,
+chama `POST /validar` e exibe o resultado. A decisão de validade é sempre de C2, por meio de C5.
+
+**Interface:** consome o contrato de §5.2 a §5.4 da `spec.md`. É servida por C5 em `GET /` e
+`GET /static/*`, sem servidor separado.
+
+**Testável por:** CT-44 e CT-45 (entrega da página e dos arquivos). O comportamento no
+navegador é verificado manualmente com o roteiro de `docs/DEMO.md`.
+
+---
+
 ## 3. Interfaces entre Componentes
 
 | De | Para | Contrato |
@@ -182,6 +197,7 @@ a classe do FastAPI deixaria esses casos fora do formato de §5.4.
 | C2 | C3 | Constrói `ResultadoValidacao` |
 | C5 | C4 | `ResultadoValidacao` para `ValidarPlacaResponse` (mapeamento de campos) |
 | C6 | C5 | Intercepta exceções e devolve `ErroResponse` |
+| C7 | C5 | `POST /validar` com JSON; exibe `ValidarPlacaResponse` ou `ErroResponse` |
 
 Cada seta acima é um ponto de dublê (`stub`/`fake`) possível, permitindo testar C5 com um
 validador falso e testar C2 sem HTTP.
@@ -193,11 +209,13 @@ validador falso e testar C2 sem HTTP.
 ```mermaid
 flowchart TD
     Cliente["Cliente HTTP"]
+    Navegador["Navegador"]
 
     subgraph Borda["Camada de Borda (depende de framework)"]
         C5["C5 - Camada API<br/>app/main.py<br/>FastAPI"]
         C4["C4 - Schemas Pydantic<br/>app/schemas.py"]
         C6["C6 - Tratador de erros<br/>handlers em app/main.py"]
+        C7["C7 - Interface PlacaCheck<br/>app/static/"]
     end
 
     subgraph Nucleo["Núcleo de Domínio (RNF-01: sem framework)"]
@@ -206,6 +224,8 @@ flowchart TD
         C3["C3 - Modelo de resultado<br/>resultado.py<br/>Padrao, Motivo, ResultadoValidacao"]
     end
 
+    Navegador -->|"usa a página"| C7
+    C7 -->|"POST /validar (JSON)"| C5
     Cliente -->|"POST /validar (JSON)"| C5
     C5 -->|"valida corpo"| C4
     C4 -.->|"corpo inválido: 422"| C6
@@ -240,6 +260,7 @@ Cada passo é uma tarefa independente, testável e mergeável por PR próprio:
 4. C4 — schemas + testes de serialização.
 5. C5 — rotas + testes CT-34, CT-35, CT-41.
 6. C6 — tratamento de erro + testes CT-36 a CT-40.
+7. C7 — interface web + testes CT-44 e CT-45.
 
 Os passos 1 a 3 não dependem de FastAPI e podem ser feitos em paralelo com o
 empacotamento Docker.
@@ -252,6 +273,7 @@ empacotamento Docker.
 |---|---|---|---|
 | C1, C2, C3 | `tests/test_validator.py` | Unitário puro (`pytest.mark.parametrize`) | nenhuma |
 | C4, C5, C6 | `tests/test_api.py` | Integração via `TestClient` | FastAPI |
+| C7 | `tests/test_api.py` e `docs/DEMO.md` | Entrega via `TestClient` e verificação manual no navegador | FastAPI, navegador |
 
 **Teste de arquitetura (guarda de RNF-01):** `test_nucleo_nao_depende_de_framework_web`, em
 `tests/test_validator.py`, lê os módulos de `app/core/` e falha se encontrar referência a

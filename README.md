@@ -111,7 +111,7 @@ O projeto utiliza **Spec-Driven Development (SDD)**, mantendo a especificação 
 - Interface visual responsiva para interação com o usuário.
 - Comunicação entre a interface web e a API.
 - Endpoint de saúde da aplicação.
-- Testes automatizados para o núcleo e a API.
+- Testes automatizados para o núcleo, a API e a entrega da interface.
 
 ### Fora do escopo
 
@@ -154,7 +154,7 @@ A interface web é servida pela própria aplicação FastAPI, sem necessidade de
 | `app/static/style.css` | Estilização visual e adaptação da interface para diferentes telas. |
 | `app/static/script.js` | Controla a interação do usuário e a comunicação com a API. |
 | `tests/test_validator.py` | Testa o núcleo de normalização e validação. |
-| `tests/test_api.py` | Testa os endpoints e os contratos HTTP. |
+| `tests/test_api.py` | Testa os endpoints, os contratos HTTP e a entrega da interface. |
 
 ### Fluxo de validação
 
@@ -275,7 +275,7 @@ Além do Docker, também é possível executar o projeto diretamente em um ambie
 
 ### Pré-requisitos
 
-- Python 3.11 ou compatível com as dependências do projeto.
+- Python 3.12 (mesma versão do Docker e do CI).
 - Git.
 - Terminal ou VS Code.
 
@@ -326,7 +326,9 @@ python -m pytest -v
 
 Os testes verificam regras de normalização, formatos válidos e inválidos, motivos de rejeição, endpoints e tratamento de requisições.
 
-**Resultado da última execução registrada (2026-10-25):** 50 testes aprovados, 0 falhas, cobertura de 100% em `app/core`. Execução feita no mesmo ambiente do CI (contêiner `python:3.12-slim`)
+**Resultado da última execução registrada (2026-10-31):** 61 testes aprovados, 0 falhas, cobertura de 100% em `app/core`. Execução local, fora do Docker, com Python 3.12; log em [`logs_testes_local.txt`](logs_testes_local.txt).
+
+**Última execução registrada no Docker (2026-10-25):** 50 testes aprovados, antes dos testes adicionados na spec v2.0; log em [`logs_testes_final.txt`](logs_testes_final.txt).
 
 
 ## 8. Execução com Docker
@@ -378,7 +380,7 @@ $ curl -X POST http://127.0.0.1:8000/validar -H "Content-Type: application/json"
 
 O resultado acima registra a verificação anterior da API. A interface visual deve ser conferida também no ambiente Docker após sua integração.
 
-A última execução registrada dos testes está versionada em [`logs_testes_final.txt`](logs_testes_final.txt). O roteiro completo de demonstração está em [`docs/DEMO.md`](docs/DEMO.md).
+A última execução dos testes no Docker está versionada em [`logs_testes_final.txt`](logs_testes_final.txt). O roteiro completo de demonstração está em [`docs/DEMO.md`](docs/DEMO.md).
 
 ## 9. Spec-Driven Development (SDD)
 
@@ -389,7 +391,8 @@ Documentos do fluxo SDD:
 - [`docs/spec-changelog.md`](docs/spec-changelog.md) — refinamentos da especificação.
 - [`docs/refinamento-testes-erros-respecificacao.md`](docs/refinamento-testes-erros-respecificacao.md) — erros lógicos e loop de re-especificação.
 - [`docs/ERROS.md`](docs/ERROS.md) — registro dos erros lógicos do ciclo (E-01 a E-07).
-- [`docs/DEMO.md`](docs/DEMO.md) — roteiro de demonstração da API.
+- [`docs/DEMO.md`](docs/DEMO.md) — roteiro de demonstração da aplicação.
+- [`docs/sprints.md`](docs/sprints.md) — ciclos de trabalho, tarefas e responsáveis, a partir do histórico do GitHub.
 - [`docs/relatorio-tecnico-etico.md`](docs/relatorio-tecnico-etico.md) — análise comparativa e ético-técnica do uso de IA.
 - [`CLAUDE.md`](CLAUDE.md) / [`AGENTS.md`](AGENTS.md) — regras e contexto para os agentes de IA.
 
@@ -467,13 +470,13 @@ O uso de IA não substitui a responsabilidade dos integrantes pela correção, s
 - [x] Núcleo de normalização e validação.
 - [x] API com endpoints principais.
 - [x] Respostas estruturadas de validação.
-- [x] Testes automatizados: 50 aprovados na última execução registrada.
+- [x] Testes automatizados: 61 aprovados na última execução registrada.
 - [x] Cobertura de 100% no núcleo na última execução registrada.
 - [x] Pipeline de CI no GitHub Actions.
 - [x] Configuração de execução com Docker Compose.
 - [x] ADRs em arquivos individuais ([`docs/adr/`](docs/adr/)).
 - [x] Instruções para agentes de IA ([`CLAUDE.md`](CLAUDE.md), [`AGENTS.md`](AGENTS.md)).
-- [x] Interface web PlacaCheck com HTML, CSS e JavaScript.
+- [x] Interface web PlacaCheck com HTML, CSS e JavaScript, incorporada à spec.
 
 
 ---

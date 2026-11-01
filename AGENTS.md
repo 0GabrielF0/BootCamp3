@@ -7,12 +7,13 @@ cumpre a especificação.
 
 ## Projeto
 
-API que valida placas veiculares brasileiras nos padrões antigo (`AAA9999`) e Mercosul
-(`AAA9A99`).
+API e interface web que validam placas veiculares brasileiras nos padrões antigo (`AAA9999`) e
+Mercosul (`AAA9A99`).
 
 - `app/core/` — domínio puro: `normalizador.py`, `validador.py`, `resultado.py`.
   **Não pode importar FastAPI, Pydantic ou Starlette** (RNF-01; verificado por teste).
 - `app/main.py`, `app/schemas.py` — borda HTTP (FastAPI).
+- `app/static/` — interface web PlacaCheck, sem regra de validade.
 - `tests/` — `test_validator.py` (núcleo) e `test_api.py` (contrato HTTP).
 - `docs/spec.md` — fonte da verdade (RF, RNF, RN, CT).
 - `docs/components.md`, `docs/spec-changelog.md`, `docs/adr/`.
@@ -47,8 +48,8 @@ docker compose up --build                                   # API em http://127.
 
 ## Git
 
-- Branches: `feature/*` ou `docs/*` a partir de `develop`; PR para `develop`; `main` só recebe
-  PR de `develop`. Nunca fazer push direto em `main`.
+- Branches: `feature/*` ou `docs/*` a partir de `main`; PR para `main` (ADR-006). Nunca fazer
+  push direto em `main`.
 - Commits no formato Conventional Commits (`feat:`, `fix:`, `docs:`, `test:`).
 - Use o template de PR (`.github/pull_request_template.md`) e preencha os critérios de aceitação.
 

@@ -73,6 +73,45 @@ no [`spec-changelog.md`](./spec-changelog.md).
   da tabela da spec.
 - **Classificação:** implementação.
 
+## E-08 · Interface adicionada sem atualizar a especificação
+
+- **Detecção:** auditoria do repositório contra os critérios das entregas, depois dos PRs #16 e #17.
+- **Causa:** a interface foi implementada e `GET /` mudou de JSON para HTML, mas a spec ainda dizia que
+  front-end estava fora do escopo. O teste foi ajustado ao novo comportamento e a suíte seguiu verde.
+- **Correção:** spec v2.0, com RF-11, CT-44, CT-45 e o componente C7; CT-42 marcado como obsoleto.
+- **Prevenção:** o critério de aceitação do template de PR sobre `docs/spec.md` deve ser conferido pelo revisor.
+- **Classificação:** especificação.
+
+## E-09 · CT-03, CT-04 e CT-05 sem suas entradas exatas
+
+- **Detecção:** ao marcar cada teste com o ID do CT correspondente (P-06).
+- **Causa:** a suíte usava entradas parecidas (`" abc-1234 "`, `"abc1234"`), mas não as da tabela da spec.
+  Como esses testes não citavam IDs, a lacuna não aparecia.
+- **Correção:** as três entradas foram adicionadas a `test_placas_validas` (spec v2.0).
+- **Prevenção:** cada linha parametrizada cita o ID que verifica.
+- **Classificação:** implementação.
+
+## E-10 · Marcações de bloco de código em `index.html`
+
+- **Detecção:** leitura do arquivo na auditoria; depois confirmada pelo teste CT-44, que falhou.
+- **Causa:** o arquivo começava com ` ```html ` e terminava com ` ``` `. Como o `<!DOCTYPE html>` não era o
+  início do documento, o navegador podia renderizar a página em modo de compatibilidade. O teste anterior só
+  procurava o texto `PlacaCheck` e não detectava o problema.
+- **Correção:** marcações removidas; CT-44 exige que o documento comece por `<!DOCTYPE html>`.
+- **Prevenção:** ler o diff completo de arquivos gerados com IA antes de aprovar o PR.
+- **Classificação:** implementação.
+
+## E-11 · Caracteres fora de A–Z convertidos em letras válidas
+
+- **Detecção:** teste exploratório na auditoria, com a suíte 100% verde e 100% de cobertura no núcleo.
+- **Causa:** `str.upper()` também converte caracteres fora de ASCII: `ß` vira `SS`, `ſ` vira `S` e `ı` vira `I`.
+  Assim, `ſbc1234` virava `SBC1234` e era aceita. A RN-03 mandava converter para maiúsculas sem delimitar
+  quais caracteres, e a interface repetia a conversão com `toUpperCase()` antes de enviar a placa.
+- **Correção:** a normalização converte apenas letras ASCII, a interface deixou de converter e os casos
+  CT-46 e CT-47 foram criados (spec v2.1). Os testes novos falharam antes da correção.
+- **Prevenção:** casos de borda com caracteres cuja maiúscula muda de forma ou tamanho.
+- **Classificação:** especificação.
+
 ## Lição do ciclo
 
 Os erros E-01 a E-05 passaram por uma suíte 100% verde e só foram encontrados por **revisão

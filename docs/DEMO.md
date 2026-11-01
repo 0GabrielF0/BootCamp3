@@ -1,8 +1,7 @@
 # Roteiro de Demonstração
 
-Percorre o fluxo completo da API no ambiente padronizado. As respostas abaixo foram obtidas
-em 2026-10-25. Também é possível usar a interface interativa em
-`http://127.0.0.1:8000/docs`.
+Percorre o fluxo completo da aplicação no ambiente padronizado. Também é possível usar a
+documentação interativa em `http://127.0.0.1:8000/docs`.
 
 ## 1. Subir a API
 
@@ -10,17 +9,24 @@ em 2026-10-25. Também é possível usar a interface interativa em
 docker compose up --build api
 ```
 
-## 2. Status e saúde
+## 2. Interface web (RF-11, verificação manual)
+
+Abra `http://127.0.0.1:8000/` no navegador e confira:
+
+| Digite | Resultado esperado |
+|---|---|
+| `abc-1234` | Placa válida, `ABC1234`, padrão `antigo` |
+| `abc1d23` | Placa válida, `ABC1D23`, padrão `mercosul` |
+| `1234ABC` | Placa inválida, com a mensagem do motivo |
+
+## 3. Saúde
 
 ```bash
-curl http://127.0.0.1:8000/
-# {"projeto":"Validador de Placas Brasileiras","status":"operacional","documentacao":"/docs"}
-
 curl http://127.0.0.1:8000/health
 # {"status":"ok"}
 ```
 
-## 3. Placas válidas (RN-01, RN-02, RN-03)
+## 4. Placas válidas (RN-01, RN-02, RN-03)
 
 ```bash
 curl -X POST http://127.0.0.1:8000/validar -H "Content-Type: application/json" -d '{"placa":"ABC-1234"}'
@@ -30,7 +36,7 @@ curl -X POST http://127.0.0.1:8000/validar -H "Content-Type: application/json" -
 # 200 {"valida":true,"placa_normalizada":"ABC1D23","padrao":"mercosul","motivo":null,...}
 ```
 
-## 4. Placas rejeitadas, com motivo
+## 5. Placas rejeitadas, com motivo
 
 ```bash
 curl -X POST http://127.0.0.1:8000/validar -H "Content-Type: application/json" -d '{"placa":"ABC-12345"}'
@@ -43,7 +49,7 @@ curl -X POST http://127.0.0.1:8000/validar -H "Content-Type: application/json" -
 # 200 {"valida":false,...,"motivo":"FORMATO_DESCONHECIDO",...}
 ```
 
-## 5. Requisições inválidas (contrato HTTP)
+## 6. Requisições inválidas (contrato HTTP)
 
 ```bash
 curl -X POST http://127.0.0.1:8000/validar -H "Content-Type: application/json" -d '{"plaka":"ABC1234"}'
@@ -53,9 +59,9 @@ curl http://127.0.0.1:8000/validar
 # 405 {"erro":{"codigo":"METODO_NAO_PERMITIDO",...}}
 ```
 
-## 6. Rodar o harness
+## 7. Rodar o harness
 
 ```bash
 docker compose run --rm tests
-# ... 50 passed — log completo em logs_testes_final.txt
+# ... 61 passed
 ```
