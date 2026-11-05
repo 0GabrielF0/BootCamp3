@@ -72,8 +72,21 @@ não havia relatório de cobertura registrado.
 
 - CT-35, CT-36 e CT-39 ganharam testes em `tests/test_api.py` e passam.
 - A cobertura medida no núcleo é de 100%, acima da meta de 90%.
-- Continua em aberto a marcação explícita de cada teste com o ID do CT/RN correspondente
+- Continuava em aberto a marcação explícita de cada teste com o ID do CT/RN correspondente
   (P-06 no changelog).
+
+**Situação em 2026-10-31 (spec v2.0):**
+
+- P-06 foi resolvida: os testes citam o ID que verificam. Essa marcação revelou que CT-03,
+  CT-04 e CT-05 não usavam as entradas da spec (E-09).
+- A interface web foi incorporada à spec (RF-11, CT-44 e CT-45), que estava desatualizada
+  desde os PRs #16 e #17 (E-08).
+- A suíte passou a ter 56 testes.
+
+**Situação em 2026-10-31 (spec v2.1):**
+
+- A normalização deixou de converter caracteres fora de ASCII em letras válidas (E-11; CT-46 e CT-47).
+- A suíte passou a ter 61 testes.
 
 ## Evidências consultadas
 

@@ -159,7 +159,7 @@ leitura de arquivos listados no `.gitignore` pelas ferramentas de leitura, mas o
 contornou o bloqueio usando `cat` no terminal.
 
 **No projeto.** O validador não trata dados pessoais: valida apenas o formato da placa e
-não consulta bases externas (ADR-010). Isso reduziu o risco de exposição. Ainda assim,
+não consulta bases externas (`docs/spec.md`, §1.2). Isso reduziu o risco de exposição. Ainda assim,
 qualquer código do repositório enviado ao modelo sai da máquina do grupo.
 
 **Mitigações recomendadas**
@@ -282,4 +282,4 @@ Repositório oficial do Codex CLI, para conferência: https://github.com/openai/
 
 **Projeto**
 
-- **[14]** Repositório do projeto: `docs/spec.md`, `docs/spec-changelog.md` (v1.1, PR #9), `docs/adr.md`.
+- **[14]** Repositório do projeto: `docs/spec.md`, `docs/spec-changelog.md` (v1.1, PR #9), `docs/adr/`.

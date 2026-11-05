@@ -52,7 +52,7 @@ function exibirErro(mensagem) {
 formulario.addEventListener("submit", async (evento) => {
     evento.preventDefault();
 
-    const placa = campoPlaca.value.trim().toUpperCase();
+    const placa = campoPlaca.value.trim();
 
     if (!placa) {
         exibirErro("Digite uma placa para realizar a validação.");
